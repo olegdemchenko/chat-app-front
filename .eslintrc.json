@@ -13,5 +13,8 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "prettier"]
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "no-param-reassign": "off"
+  }
 }
