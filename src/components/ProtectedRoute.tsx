@@ -1,9 +1,18 @@
 import React from "react";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useLoaderData, Outlet, Navigate, useLocation } from "react-router-dom";
+import { store } from "../store";
+import { authAPI } from "../services/auth";
 import type { UserAuthData } from "../types";
 
 const notProtectedPaths = ["/login", "/signup"];
+
+export const protectedRootLoader = async () => {
+  const { data, error } = await store.dispatch(
+    authAPI.endpoints.identifyMe.initiate(),
+  );
+  return { data, error };
+};
 
 function ProtectedRoute() {
   const { data, error } = useLoaderData() as {
