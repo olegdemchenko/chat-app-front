@@ -3,3 +3,8 @@ export type User = {
   email: string;
   isVerified: boolean;
 };
+
+export type UserAuthData = {
+  user: User;
+  token: string;
+};
