@@ -1,6 +1,6 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Login from "./views/Login";
+import Login, { loginAction } from "./views/Login/Login";
 import Chat from "./views/Chat";
 import ErrorPage from "./views/ErrorPage";
 import ProtectedRoute, {
@@ -18,6 +18,7 @@ function Router() {
       children: [
         {
           path: "login",
+          action: loginAction,
           element: <Login />,
         },
         {
