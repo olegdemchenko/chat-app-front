@@ -22,28 +22,12 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import validationRules from "./validationRules";
 import { authAPI } from "../../services/auth";
 import { store } from "../../store";
+import Copyright from "../../components/Copyright";
 
 type FormState = {
   username: string;
   password: string;
 };
-
-function Copyright() {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      sx={{ mt: 8, mb: 4 }}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="/">
-        Chat-App
-      </Link>{" "}
-      {new Date().getFullYear()}
-    </Typography>
-  );
-}
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
