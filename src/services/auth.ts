@@ -6,6 +6,16 @@ type LoginPayload = {
   password: string;
 };
 
+type SignupPayload = {
+  username: string;
+  password: string;
+  email: string;
+};
+
+type SignupResponse = {
+  status: string;
+};
+
 export const authAPI = createApi({
   reducerPath: "authAPI",
   baseQuery: fetchBaseQuery({
@@ -22,7 +32,15 @@ export const authAPI = createApi({
         body: payload,
       }),
     }),
+    signup: builder.mutation<SignupResponse, SignupPayload>({
+      query: (payload) => ({
+        url: "/signup",
+        method: "POST",
+        body: payload,
+      }),
+    }),
   }),
 });
 
-export const { useIdentifyMeQuery, useLoginMutation } = authAPI;
+export const { useIdentifyMeQuery, useLoginMutation, useSignupMutation } =
+  authAPI;

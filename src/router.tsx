@@ -6,7 +6,7 @@ import ErrorPage from "./views/ErrorPage";
 import ProtectedRoute, {
   protectedRootLoader,
 } from "./components/ProtectedRoute";
-import SignUp from "./views/SignUp";
+import SignUp, { signupAction } from "./views/SignUp";
 
 function Router() {
   const router = createBrowserRouter([
@@ -22,12 +22,13 @@ function Router() {
           element: <Login />,
         },
         {
-          path: "chat",
-          element: <Chat />,
+          path: "signup",
+          action: signupAction,
+          element: <SignUp />,
         },
         {
-          path: "signup",
-          element: <SignUp />,
+          path: "chat",
+          element: <Chat />,
         },
       ],
     },

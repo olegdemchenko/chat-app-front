@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useSubmit, useActionData } from "react-router-dom";
+import { useSubmit } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -12,22 +12,28 @@ import validationRules from "./validationRules";
 
 export enum AuthorizationErrors {
   incorrectCredentials = "incorrectCredentials",
+  duplicatedUsername = "duplicatedUsername",
+  duplicatedEmail = "duplicatedEmail",
 }
 
 const authorizationErrorMessages = {
   incorrectCredentials: "Username or password are incorrect",
+  duplicatedEmail: "This email has already been used",
+  duplicatedUsername: "User with such name already exists",
 } as {
   [key in AuthorizationErrors]: string;
 };
 
 const affectedFormFields = {
   [AuthorizationErrors.incorrectCredentials]: ["username", "password"],
+  [AuthorizationErrors.duplicatedEmail]: ["email"],
+  [AuthorizationErrors.duplicatedUsername]: ["username"],
 } as { [key in AuthorizationErrors]: ReadonlyArray<keyof FormState> };
 
 type AuthError = { type: AuthorizationErrors } | null;
 
 type AuthFormProps = {
-  variant: "login";
+  variant: "login" | "signup";
   actionPath: string;
   authError: AuthError;
 };
@@ -35,9 +41,15 @@ type AuthFormProps = {
 type FormState = {
   username: string;
   password: string;
+  email: string;
 };
 
 function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
+  const submitButtonLabels = {
+    login: "Sign In",
+    signup: "Sign up",
+  };
+
   const {
     control,
     formState: { isDirty, isValid, errors },
@@ -117,6 +129,28 @@ function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
           />
         )}
       />
+      {variant === "signup" && (
+        <Controller
+          name="email"
+          control={control}
+          rules={validationRules.email}
+          render={({ field: { value, onChange } }) => (
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              value={value}
+              onChange={onChange}
+              name="email"
+              label="Email"
+              type="email"
+              id="email"
+              error={!!errors.email}
+              helperText={errors.email?.message}
+            />
+          )}
+        />
+      )}
       <Button
         type="submit"
         fullWidth
@@ -124,7 +158,7 @@ function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
         sx={{ mt: 3, mb: 2 }}
         disabled={!isSubmitEnabled}
       >
-        Sign In
+        {submitButtonLabels[variant]}
       </Button>
       <Grid container justifyContent="center">
         <Grid item>

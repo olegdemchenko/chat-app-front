@@ -11,4 +11,10 @@ export default {
       message: "Password is required",
     },
   },
+  email: {
+    pattern: {
+      value: /^\w+@\w+\.\w+$/,
+      message: "Please, provide a correct email address",
+    },
+  },
 };
