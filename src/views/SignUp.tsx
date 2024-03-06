@@ -11,6 +11,7 @@ import { authAPI, useSignupMutation } from "../services/auth";
 import { store } from "../store";
 import Copyright from "../components/Copyright";
 import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
+import SocialMediaLinks from "../components/SocialMediaLinks";
 
 export const signupAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -62,13 +63,14 @@ function SignUp() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign up
         </Typography>
         <AuthForm
           variant="signup"
           actionPath="/signup"
           authError={getRelevantAuthError(error)}
         />
+        <SocialMediaLinks />
       </Box>
       <Copyright />
     </Container>

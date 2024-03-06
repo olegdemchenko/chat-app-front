@@ -11,6 +11,7 @@ import { authAPI, useLoginMutation } from "../../services/auth";
 import { store } from "../../store";
 import Copyright from "../../components/Copyright";
 import AuthForm, { AuthorizationErrors } from "../../components/AuthForm";
+import SocialMediaLinks from "../../components/SocialMediaLinks";
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -61,6 +62,7 @@ export default function Login() {
           actionPath="/login"
           authError={getRelevantAuthError(error)}
         />
+        <SocialMediaLinks />
       </Box>
       <Copyright />
     </Container>

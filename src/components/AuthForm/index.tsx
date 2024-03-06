@@ -6,8 +6,6 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
-import GoogleIcon from "@mui/icons-material/Google";
-import FacebookIcon from "@mui/icons-material/Facebook";
 import validationRules from "./validationRules";
 
 export enum AuthorizationErrors {
@@ -165,14 +163,6 @@ function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
           <Link href="/" variant="body2">
             {`Don't have an account? Sign Up`}
           </Link>
-        </Grid>
-      </Grid>
-      <Grid container justifyContent="center" gap={3} sx={{ mt: 2 }}>
-        <Grid item>
-          <FacebookIcon color="primary" sx={{ fontSize: 45 }} />
-        </Grid>
-        <Grid item>
-          <GoogleIcon color="error" sx={{ fontSize: 45 }} />
         </Grid>
       </Grid>
     </Box>
