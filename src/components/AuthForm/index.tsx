@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useSubmit, useActionData } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -11,18 +10,39 @@ import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import validationRules from "./validationRules";
 
+export enum AuthorizationErrors {
+  incorrectCredentials = "incorrectCredentials",
+}
+
+const authorizationErrorMessages = {
+  incorrectCredentials: "Username or password are incorrect",
+} as {
+  [key in AuthorizationErrors]: string;
+};
+
+const affectedFormFields = {
+  [AuthorizationErrors.incorrectCredentials]: ["username", "password"],
+} as { [key in AuthorizationErrors]: ReadonlyArray<keyof FormState> };
+
+type AuthError = { type: AuthorizationErrors } | null;
+
+type AuthFormProps = {
+  variant: "login";
+  actionPath: string;
+  authError: AuthError;
+};
+
 type FormState = {
   username: string;
   password: string;
 };
 
-function AuthForm() {
+function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
   const {
     control,
     formState: { isDirty, isValid, errors },
     getValues,
     setError,
-    clearErrors,
   } = useForm<FormState>({
     mode: "onChange",
     defaultValues: {
@@ -31,13 +51,17 @@ function AuthForm() {
     },
   });
 
-  const error = useActionData() as FetchBaseQueryError;
-
   useEffect(() => {
-    if (error && error.status === 404) {
-      setError("root", { message: "Username or password are incorrect" });
+    if (authError) {
+      const { type } = authError;
+      affectedFormFields[type].forEach((fieldName) => {
+        setError(fieldName, {
+          type: "value",
+          message: authorizationErrorMessages[type],
+        });
+      });
     }
-  }, [error]);
+  }, [authError]);
 
   const submit = useSubmit();
 
@@ -45,7 +69,7 @@ function AuthForm() {
     event.preventDefault();
     submit(getValues(), {
       method: "POST",
-      action: "/login",
+      action: actionPath,
     });
   };
 
@@ -62,15 +86,12 @@ function AuthForm() {
             required
             fullWidth
             value={value}
-            onChange={(e) => {
-              clearErrors("root");
-              onChange(e);
-            }}
+            onChange={onChange}
             id="username"
             label="Username"
             name="usernmame"
-            error={!!errors.root || !!errors.username}
-            helperText={errors.root?.message || errors.username?.message}
+            error={!!errors.username}
+            helperText={errors.username?.message}
             autoFocus
           />
         )}
@@ -85,17 +106,14 @@ function AuthForm() {
             required
             fullWidth
             value={value}
-            onChange={(e) => {
-              clearErrors("root");
-              onChange(e);
-            }}
+            onChange={onChange}
             name="password"
             label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
-            error={!!errors.root || !!errors.password}
-            helperText={errors.root?.message || errors.password?.message}
+            error={!!errors.password}
+            helperText={errors.password?.message}
           />
         )}
       />
