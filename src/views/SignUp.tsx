@@ -12,6 +12,7 @@ import { store } from "../store";
 import Copyright from "../components/Copyright";
 import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
 import SocialMediaLinks from "../components/SocialMediaLinks";
+import PageLink from "../components/PageLink";
 
 export const signupAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -70,6 +71,7 @@ function SignUp() {
           actionPath="/signup"
           authError={getRelevantAuthError(error)}
         />
+        <PageLink href="/login" text="Already have an account? Sign in" />
         <SocialMediaLinks />
       </Box>
       <Copyright />

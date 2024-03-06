@@ -4,8 +4,6 @@ import { useSubmit } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import validationRules from "./validationRules";
 
 export enum AuthorizationErrors {
@@ -158,13 +156,6 @@ function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
       >
         {submitButtonLabels[variant]}
       </Button>
-      <Grid container justifyContent="center">
-        <Grid item>
-          <Link href="/" variant="body2">
-            {`Don't have an account? Sign Up`}
-          </Link>
-        </Grid>
-      </Grid>
     </Box>
   );
 }
