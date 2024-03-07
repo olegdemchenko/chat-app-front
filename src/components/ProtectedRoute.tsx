@@ -31,6 +31,9 @@ function ProtectedRoute() {
       !notProtectedPaths.includes(pathname): {
       return <Navigate to="/login" />;
     }
+    case data && pathname === "/": {
+      return <Navigate to="/chat" />;
+    }
     default:
       return <Outlet />;
   }
