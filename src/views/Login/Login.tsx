@@ -4,7 +4,12 @@ import Box from "@mui/material/Box";
 import LoginIcon from "@mui/icons-material/Login";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { ActionFunction, redirect, useSubmit } from "react-router-dom";
+import {
+  ActionFunction,
+  redirect,
+  useSubmit,
+  useNavigation,
+} from "react-router-dom";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { authAPI, useLoginMutation } from "../../services/auth";
@@ -16,6 +21,7 @@ import AuthForm, {
 } from "../../components/AuthForm";
 import SocialMediaLinks from "../../components/SocialMediaLinks";
 import PageLink from "../../components/PageLink";
+import Backdrop from "../../components/Backdrop";
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -44,6 +50,7 @@ const getRelevantAuthError = (
 };
 
 export default function Login() {
+  const { state: navigationState } = useNavigation();
   const [login, { error }] = useLoginMutation({ fixedCacheKey: "login" });
 
   const submit = useSubmit();
@@ -80,6 +87,7 @@ export default function Login() {
         <SocialMediaLinks />
         <Copyright />
       </Box>
+      <Backdrop isOpen={navigationState === "submitting"} />
     </Container>
   );
 }

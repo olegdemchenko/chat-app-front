@@ -1,5 +1,10 @@
 import React from "react";
-import { ActionFunction, redirect, useSubmit } from "react-router-dom";
+import {
+  ActionFunction,
+  redirect,
+  useSubmit,
+  useNavigation,
+} from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -16,6 +21,7 @@ import AuthForm, {
 } from "../components/AuthForm";
 import SocialMediaLinks from "../components/SocialMediaLinks";
 import PageLink from "../components/PageLink";
+import Backdrop from "../components/Backdrop";
 
 export const signupAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -52,6 +58,7 @@ const getRelevantAuthError = (
 };
 
 function SignUp() {
+  const { state: navigationState } = useNavigation();
   const [signup, { error }] = useSignupMutation({ fixedCacheKey: "signup" });
 
   const submit = useSubmit();
@@ -88,6 +95,7 @@ function SignUp() {
         <SocialMediaLinks />
         <Copyright />
       </Box>
+      <Backdrop isOpen={navigationState === "submitting"} />
     </Container>
   );
 }
