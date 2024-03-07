@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useSubmit } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -49,38 +48,33 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
   const {
     control,
     formState: { isDirty, isValid, errors },
-    getValues,
     setError,
+    clearErrors,
     handleSubmit,
   } = useForm<FormState>({
     mode: "onChange",
     defaultValues: {
       username: "",
       password: "",
+      email: "",
     },
   });
 
   useEffect(() => {
-    if (authError) {
-      const { type } = authError;
-      affectedFormFields[type].forEach((fieldName) => {
-        setError(fieldName, {
-          type: "value",
-          message: authorizationErrorMessages[type],
-        });
-      });
+    if (!authError) {
+      return;
     }
+    const { type } = authError;
+    affectedFormFields[type].forEach((fieldName) => {
+      setError(fieldName, {
+        type: "value",
+        message: authorizationErrorMessages[type],
+      });
+    });
+    return () => {
+      affectedFormFields[type].forEach((fieldName) => clearErrors(fieldName));
+    };
   }, [authError]);
-
-  //  const submit = useSubmit();
-
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   submit(getValues(), {
-  //     method: "POST",
-  //     action: actionPath,
-  //   });
-  // };
 
   const isSubmitEnabled = isDirty && isValid;
   return (
