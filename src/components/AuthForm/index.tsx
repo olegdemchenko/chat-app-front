@@ -30,17 +30,17 @@ type AuthError = { type: AuthorizationErrors } | null;
 
 type AuthFormProps = {
   variant: "login" | "signup";
-  actionPath: string;
   authError: AuthError;
+  onSubmit: (state: FormState) => void;
 };
 
-type FormState = {
+export type FormState = {
   username: string;
   password: string;
   email: string;
 };
 
-function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
+function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
   const submitButtonLabels = {
     login: "Sign In",
     signup: "Sign up",
@@ -51,6 +51,7 @@ function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
     formState: { isDirty, isValid, errors },
     getValues,
     setError,
+    handleSubmit,
   } = useForm<FormState>({
     mode: "onChange",
     defaultValues: {
@@ -71,19 +72,19 @@ function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
     }
   }, [authError]);
 
-  const submit = useSubmit();
+  //  const submit = useSubmit();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    submit(getValues(), {
-      method: "POST",
-      action: actionPath,
-    });
-  };
+  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   submit(getValues(), {
+  //     method: "POST",
+  //     action: actionPath,
+  //   });
+  // };
 
   const isSubmitEnabled = isDirty && isValid;
   return (
-    <Box component="form" sx={{ mt: 1 }} onSubmit={handleSubmit}>
+    <Box component="form" sx={{ mt: 1 }}>
       <Controller
         name="username"
         control={control}
@@ -153,6 +154,7 @@ function AuthForm({ variant, actionPath, authError }: AuthFormProps) {
         variant="contained"
         sx={{ mt: 3, mb: 2 }}
         disabled={!isSubmitEnabled}
+        onClick={handleSubmit(onSubmit)}
       >
         {submitButtonLabels[variant]}
       </Button>

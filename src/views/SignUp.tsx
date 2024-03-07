@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionFunction, redirect } from "react-router-dom";
+import { ActionFunction, redirect, useSubmit } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -10,7 +10,10 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { authAPI, useSignupMutation } from "../services/auth";
 import { store } from "../store";
 import Copyright from "../components/Copyright";
-import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
+import AuthForm, {
+  AuthorizationErrors,
+  FormState,
+} from "../components/AuthForm";
 import SocialMediaLinks from "../components/SocialMediaLinks";
 import PageLink from "../components/PageLink";
 
@@ -50,6 +53,16 @@ const getRelevantAuthError = (
 
 function SignUp() {
   const [signup, { error }] = useSignupMutation({ fixedCacheKey: "signup" });
+
+  const submit = useSubmit();
+
+  const handleSubmit = (state: FormState) => {
+    submit(state, {
+      method: "POST",
+      action: "/signup",
+    });
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -68,13 +81,13 @@ function SignUp() {
         </Typography>
         <AuthForm
           variant="signup"
-          actionPath="/signup"
           authError={getRelevantAuthError(error)}
+          onSubmit={handleSubmit}
         />
         <PageLink href="/login" text="Already have an account? Sign in" />
         <SocialMediaLinks />
+        <Copyright />
       </Box>
-      <Copyright />
     </Container>
   );
 }
