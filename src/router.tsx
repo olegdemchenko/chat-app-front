@@ -8,7 +8,7 @@ import ProtectedRoute, {
 } from "./components/ProtectedRoute";
 import SignUp, { signupAction } from "./views/SignUp";
 import VerifyEmail from "./views/VerifyEmail";
-import EmailVerified from "./views/EmailVerified";
+import VerificationSuccess from "./views/VerificationSuccess";
 
 function Router() {
   const router = createBrowserRouter([
@@ -32,7 +32,7 @@ function Router() {
           path: "verify_email",
           element: <VerifyEmail />,
         },
-        { path: "email_verify_success", element: <EmailVerified /> },
+        { path: "email_verify_success", element: <VerificationSuccess /> },
         {
           path: "chat",
           element: <Chat />,
