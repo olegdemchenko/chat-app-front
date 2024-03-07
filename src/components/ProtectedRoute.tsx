@@ -5,7 +5,7 @@ import { store } from "../store";
 import { authAPI } from "../services/auth";
 import type { UserAuthData } from "../types";
 
-const notProtectedPaths = ["/login", "/signup"];
+const notProtectedPaths = ["/login", "/signup", "/verify_email"];
 
 export const protectedRootLoader = async () => {
   const { data, error } = await store.dispatch(

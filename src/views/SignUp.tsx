@@ -28,7 +28,7 @@ export const signupAction: ActionFunction = async ({ request }) => {
   if ("error" in response) {
     return response.error;
   }
-  return redirect("/chat");
+  return redirect("/verify_email");
 };
 
 const getRelevantAuthError = (
