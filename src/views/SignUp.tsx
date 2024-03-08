@@ -7,9 +7,7 @@ import {
 } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { authAPI, useSignupMutation } from "../services/auth";
@@ -22,6 +20,7 @@ import AuthForm, {
 import SocialMediaLinks from "../components/SocialMediaLinks";
 import PageLink from "../components/PageLink";
 import Backdrop from "../components/Backdrop";
+import CenteringContainer from "../components/CenteringContainer";
 
 export const signupAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -71,35 +70,23 @@ function SignUp() {
   };
 
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      sx={{ display: "flex", alignItems: "center", height: "100vh" }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign up
-        </Typography>
-        <AuthForm
-          variant="signup"
-          authError={getRelevantAuthError(error)}
-          onSubmit={handleSubmit}
-        />
-        <PageLink href="/login" text="Already have an account? Sign in" />
-        <SocialMediaLinks />
-        <Copyright />
-      </Box>
+    <CenteringContainer>
+      <Avatar sx={{ mb: 1, bgcolor: "primary.main" }}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign up
+      </Typography>
+      <AuthForm
+        variant="signup"
+        authError={getRelevantAuthError(error)}
+        onSubmit={handleSubmit}
+      />
+      <PageLink href="/login" text="Already have an account? Sign in" />
+      <SocialMediaLinks />
+      <Copyright />
       <Backdrop isOpen={navigationState === "submitting"} />
-    </Container>
+    </CenteringContainer>
   );
 }
 

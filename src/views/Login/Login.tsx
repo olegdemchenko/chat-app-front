@@ -1,9 +1,7 @@
 import React from "react";
 import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
 import LoginIcon from "@mui/icons-material/Login";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import {
   ActionFunction,
   redirect,
@@ -22,6 +20,7 @@ import AuthForm, {
 import SocialMediaLinks from "../../components/SocialMediaLinks";
 import PageLink from "../../components/PageLink";
 import Backdrop from "../../components/Backdrop";
+import CenteringContainer from "../../components/CenteringContainer";
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -63,34 +62,22 @@ export default function Login() {
   };
 
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      sx={{ display: "flex", alignItems: "center", height: "100vh" }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <LoginIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <AuthForm
-          variant="login"
-          authError={getRelevantAuthError(error)}
-          onSubmit={handleSubmit}
-        />
-        <PageLink href="/signup" text={`Don't have an account? Sign Up`} />
-        <SocialMediaLinks />
-        <Copyright />
-      </Box>
+    <CenteringContainer>
+      <Avatar sx={{ mb: 1, bgcolor: "primary.main" }}>
+        <LoginIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
+      <AuthForm
+        variant="login"
+        authError={getRelevantAuthError(error)}
+        onSubmit={handleSubmit}
+      />
+      <PageLink href="/signup" text={`Don't have an account? Sign Up`} />
+      <SocialMediaLinks />
+      <Copyright />
       <Backdrop isOpen={navigationState === "submitting"} />
-    </Container>
+    </CenteringContainer>
   );
 }
