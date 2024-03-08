@@ -10,17 +10,17 @@ import {
 } from "react-router-dom";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { authAPI, useLoginMutation } from "../../services/auth";
-import { store } from "../../store";
-import Copyright from "../../components/Copyright";
+import { authAPI, useLoginMutation } from "../services/auth";
+import { store } from "../store";
+import Copyright from "../components/Copyright";
 import AuthForm, {
   AuthorizationErrors,
   FormState,
-} from "../../components/AuthForm";
-import SocialMediaLinks from "../../components/SocialMediaLinks";
-import PageLink from "../../components/PageLink";
-import Backdrop from "../../components/Backdrop";
-import CenteringContainer from "../../components/CenteringContainer";
+} from "../components/AuthForm";
+import SocialMediaLinks from "../components/SocialMediaLinks";
+import PageLink from "../components/PageLink";
+import Backdrop from "../components/Backdrop";
+import CenteringContainer from "../components/CenteringContainer";
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();

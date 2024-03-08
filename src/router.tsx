@@ -1,6 +1,6 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Login, { loginAction } from "./views/Login/Login";
+import Login, { loginAction } from "./views/Login";
 import Chat from "./views/Chat";
 import ErrorPage from "./views/ErrorPage";
 import ProtectedRoute, {
