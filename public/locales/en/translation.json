@@ -1,0 +1,21 @@
+{
+  "auth": {
+    "signin": "Sign in",
+    "signup": "Sign up",
+    "signupLink": "Don't have an account? Sign Up",
+    "signinLink": "Already have an account? Sign in",
+    "username": "Username",
+    "password": "Password",
+    "email": "Email",
+    "verificationLetterSent": "A letter with a verification link has been sent to your email address. Please, check your inbox.",
+    "emailVerificationSuccess": "Congratulations! Your email has been verified successfully!",
+    "chatLink": "Start chatting right now!",
+    "validation": {
+      "invalidCreds": "Username or password are incorrect",
+      "duplicatedEmail": "This email has already been used",
+      "duplicatedUsername": "User with such name already exists",
+      "fieldIsRequired": "{{ field }} is required",
+      "incorrectEmail": "Please, provide a correct email address"
+    }
+  }
+}

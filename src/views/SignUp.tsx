@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { useTranslation } from "react-i18next";
 import { authAPI, useSignupMutation } from "../services/auth";
 import { store } from "../store";
 import Copyright from "../components/Copyright";
@@ -57,6 +58,7 @@ const getRelevantAuthError = (
 };
 
 function SignUp() {
+  const { t } = useTranslation();
   const { state: navigationState } = useNavigation();
   const [signup, { error }] = useSignupMutation({ fixedCacheKey: "signup" });
 
@@ -75,14 +77,14 @@ function SignUp() {
         <LockOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Sign up
+        {t("auth.signup")}
       </Typography>
       <AuthForm
         variant="signup"
         authError={getRelevantAuthError(error)}
         onSubmit={handleSubmit}
       />
-      <PageLink href="/login" text="Already have an account? Sign in" />
+      <PageLink href="/login" text={t("auth.signinLink")} />
       <SocialMediaLinks />
       <Copyright />
       <Backdrop isOpen={navigationState === "submitting"} />

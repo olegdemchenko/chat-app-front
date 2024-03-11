@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { useTranslation } from "react-i18next";
 import validationRules from "./validationRules";
 
 export enum AuthorizationErrors {
@@ -10,14 +11,6 @@ export enum AuthorizationErrors {
   duplicatedUsername = "duplicatedUsername",
   duplicatedEmail = "duplicatedEmail",
 }
-
-const authorizationErrorMessages = {
-  incorrectCredentials: "Username or password are incorrect",
-  duplicatedEmail: "This email has already been used",
-  duplicatedUsername: "User with such name already exists",
-} as {
-  [key in AuthorizationErrors]: string;
-};
 
 const affectedFormFields = {
   [AuthorizationErrors.incorrectCredentials]: ["username", "password"],
@@ -40,9 +33,18 @@ export type FormState = {
 };
 
 function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
+  const { t } = useTranslation();
+  const authorizationErrorMessages = {
+    incorrectCredentials: t("auth.validation.invalidCreds"),
+    duplicatedEmail: t("auth.validation.duplicatedEmail"),
+    duplicatedUsername: t("auth.validation.duplicatedUsername"),
+  } as {
+    [key in AuthorizationErrors]: string;
+  };
+
   const submitButtonLabels = {
-    login: "Sign In",
-    signup: "Sign up",
+    login: t("auth.signin"),
+    signup: t("auth.signup"),
   };
 
   const {
@@ -82,7 +84,7 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
       <Controller
         name="username"
         control={control}
-        rules={validationRules.username}
+        rules={validationRules.username(t)}
         render={({ field: { value, onChange } }) => (
           <TextField
             margin="normal"
@@ -91,7 +93,7 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
             value={value}
             onChange={onChange}
             id="username"
-            label="Username"
+            label={t("auth.username")}
             name="usernmame"
             error={!!errors.username}
             helperText={errors.username?.message}
@@ -102,7 +104,7 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
       <Controller
         name="password"
         control={control}
-        rules={validationRules.password}
+        rules={validationRules.password(t)}
         render={({ field: { value, onChange } }) => (
           <TextField
             margin="normal"
@@ -111,7 +113,7 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
             value={value}
             onChange={onChange}
             name="password"
-            label="Password"
+            label={t("auth.password")}
             type="password"
             id="password"
             autoComplete="current-password"
@@ -124,7 +126,7 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
         <Controller
           name="email"
           control={control}
-          rules={validationRules.email}
+          rules={validationRules.email(t)}
           render={({ field: { value, onChange } }) => (
             <TextField
               margin="normal"
@@ -133,7 +135,7 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
               value={value}
               onChange={onChange}
               name="email"
-              label="Email"
+              label={t("auth.email")}
               type="email"
               id="email"
               error={!!errors.email}

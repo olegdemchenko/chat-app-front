@@ -1,20 +1,22 @@
+import { TFunction } from "i18next";
+
 export default {
-  username: {
+  username: (t: TFunction<"translation", undefined>) => ({
     required: {
       value: true,
-      message: "Username is required",
+      message: t("auth.validation.fieldIsRequired", { field: "username" }),
     },
-  },
-  password: {
+  }),
+  password: (t: TFunction<"translation", undefined>) => ({
     required: {
       value: true,
-      message: "Password is required",
+      message: t("auth.validation.fieldIsRequired", { field: "password" }),
     },
-  },
-  email: {
+  }),
+  email: (t: TFunction<"translation", undefined>) => ({
     pattern: {
       value: /^\w+@\w+\.\w+$/,
-      message: "Please, provide a correct email address",
+      message: t("auth.validation.incorrectEmail"),
     },
-  },
+  }),
 };

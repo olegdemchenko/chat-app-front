@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { useTranslation } from "react-i18next";
 import { authAPI, useLoginMutation } from "../services/auth";
 import { store } from "../store";
 import Copyright from "../components/Copyright";
@@ -51,6 +52,7 @@ const getRelevantAuthError = (
 export default function Login() {
   const { state: navigationState } = useNavigation();
   const [login, { error }] = useLoginMutation({ fixedCacheKey: "login" });
+  const { t } = useTranslation();
 
   const submit = useSubmit();
 
@@ -67,14 +69,14 @@ export default function Login() {
         <LoginIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Sign in
+        {t("auth.signin")}
       </Typography>
       <AuthForm
         variant="login"
         authError={getRelevantAuthError(error)}
         onSubmit={handleSubmit}
       />
-      <PageLink href="/signup" text={`Don't have an account? Sign Up`} />
+      <PageLink href="/signup" text={t("auth.signupLink")} />
       <SocialMediaLinks />
       <Copyright />
       <Backdrop isOpen={navigationState === "submitting"} />
