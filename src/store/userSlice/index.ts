@@ -38,3 +38,4 @@ const userSlice = createSlice({
 export default userSlice.reducer;
 
 export const selectCurrentUser = (state: RootState) => state.user.info;
+export const selectCurrentUserToken = (state: RootState) => state.user.token;
