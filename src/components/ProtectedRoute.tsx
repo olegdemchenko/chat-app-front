@@ -1,33 +1,26 @@
 import React from "react";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { useLoaderData, Outlet, Navigate, useLocation } from "react-router-dom";
-import { store } from "../store";
-import { authAPI } from "../services/auth";
-import type { UserAuthData } from "../types";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
+import { useIdentifyMeQuery } from "../services/auth";
+import Backdrop from "./Backdrop";
 
 const notProtectedPaths = ["/login", "/signup", "/verify_email"];
 
-export const protectedRootLoader = async () => {
-  const { data, error } = await store.dispatch(
-    authAPI.endpoints.identifyMe.initiate(),
-  );
-  return { data, error };
-};
-
 function ProtectedRoute() {
-  const { data, error } = useLoaderData() as {
-    data: UserAuthData | undefined;
-    error: FetchBaseQueryError | undefined;
-  };
+  const { data, error, isFetching } = useIdentifyMeQuery();
+  const queryError = error as FetchBaseQueryError;
   const { pathname } = useLocation();
+  if (isFetching) {
+    return <Backdrop isOpen />;
+  }
   switch (true) {
-    case error &&
-      error.status === 400 &&
+    case queryError &&
+      queryError.status === 400 &&
       notProtectedPaths.includes(pathname): {
       return <Outlet />;
     }
-    case error &&
-      error.status === 400 &&
+    case queryError &&
+      queryError.status === 400 &&
       !notProtectedPaths.includes(pathname): {
       return <Navigate to="/login" />;
     }

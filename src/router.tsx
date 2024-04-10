@@ -3,9 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login, { loginAction } from "./views/Login";
 import Chat from "./views/Chat";
 import ErrorPage from "./views/ErrorPage";
-import ProtectedRoute, {
-  protectedRootLoader,
-} from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import SignUp, { signupAction } from "./views/SignUp";
 import VerifyEmail from "./views/VerifyEmail";
 import VerificationSuccess from "./views/VerificationSuccess";
@@ -15,7 +13,6 @@ function Router() {
     {
       path: "/",
       element: <ProtectedRoute />,
-      loader: protectedRootLoader,
       errorElement: <ErrorPage />,
       children: [
         {
