@@ -1,9 +1,13 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { selectCurrentUser, selectCurrentUserToken } from "../store/userSlice";
-import { User } from "../types";
-import chatService from "../services/chat";
+import {
+  selectCurrentUser,
+  selectCurrentUserToken,
+} from "../../store/userSlice";
+import { User } from "../../types";
+import chatService from "../../services/chat";
+import Content from "./Content";
 
 function Chat() {
   const token = useSelector(selectCurrentUserToken);
@@ -20,8 +24,7 @@ function Chat() {
       }
     })();
   }, []);
-  const user = useSelector(selectCurrentUser) as User;
-  return <div>{JSON.stringify(user)}</div>;
+  return <Content />;
 }
 
 export default Chat;
