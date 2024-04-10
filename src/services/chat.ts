@@ -4,21 +4,21 @@ class ChatService {
   private socket: null | Socket = null;
 
   connect(token: string) {
-    this.socket = io("ws://localhost:5000", {
-      auth: {
-        token,
-      },
-      transports: ["websocket"],
-    });
-    this.socket.on("connect", () =>
-      console.log("socket connected successfully"),
-    );
-    this.socket.on("connect_error", (error: Error) => {
-      console.log("connect error", error.message);
-    });
-    this.socket.on("disconnect", (reason: string) => {
-      console.log("disconnect");
-      console.log("reason", reason);
+    return new Promise((res, rej) => {
+      this.socket = io("ws://localhost:5000", {
+        auth: {
+          token,
+        },
+        transports: ["websocket"],
+      });
+      this.socket.on("connect_error", (error: Error) => {
+        console.log("connect error", error.message);
+        rej(error);
+      });
+      this.socket.on("connect", () => {
+        console.log("socket connected successfully");
+        res(null);
+      });
     });
   }
 
