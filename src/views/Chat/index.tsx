@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  selectCurrentUser,
-  selectCurrentUserToken,
-} from "../../store/userSlice";
-import { User } from "../../types";
+import { selectCurrentUserToken } from "../../store/userSlice";
 import chatService from "../../services/chat";
 import Content from "./Content";
 

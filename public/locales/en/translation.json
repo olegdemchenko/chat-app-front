@@ -19,4 +19,8 @@
       "incorrectEmail": "Please, provide a correct email address"
     }
   }
+  ,
+  "chat": {
+    "label": "chat-app"
+  }
 }
