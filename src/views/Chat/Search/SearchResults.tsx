@@ -13,7 +13,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { useTranslation } from "react-i18next";
 import { green, red } from "@mui/material/colors";
-import { Participant } from "../../types";
+import { Participant } from "../../../types";
 
 type SearchResultsProps = {
   results: ReadonlyArray<Participant>;

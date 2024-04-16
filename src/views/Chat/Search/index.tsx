@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import SearchIcon from "@mui/icons-material/Search";
 import { blue } from "@mui/material/colors";
 import { useDebounceValue } from "usehooks-ts";
-import chatService from "../../services/chat";
-import { Participant } from "../../types";
+import chatService from "../../../services/chat";
+import { Participant } from "../../../types";
 import SearchResults from "./SearchResults";
 
 const searchIconStyles = {
