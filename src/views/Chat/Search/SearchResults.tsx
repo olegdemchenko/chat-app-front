@@ -12,7 +12,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { useTranslation } from "react-i18next";
-import { green, red } from "@mui/material/colors";
+import { green, grey, red } from "@mui/material/colors";
 import { Participant } from "../../../types";
 
 type SearchResultsProps = {
@@ -56,7 +56,13 @@ function SearchResults({ results }: SearchResultsProps) {
       ) : (
         results.map(({ name, isOnline }, index) => (
           <>
-            <ListItem>
+            <ListItem
+              sx={{
+                "&:hover": {
+                  bgcolor: grey["200"],
+                },
+              }}
+            >
               <ListItemAvatar>
                 <Avatar sx={{ overflow: "visible" }}>
                   <AccountCircleIcon sx={avatarIconStyles} />
