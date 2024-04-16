@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 import Label from "./Label";
+import Search from "./Search";
 
 function Aside() {
   return (
@@ -13,6 +14,7 @@ function Aside() {
       }}
     >
       <Label />
+      <Search />
     </Box>
   );
 }

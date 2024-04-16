@@ -22,6 +22,12 @@ class ChatService {
     });
   }
 
+  findUsers(nameFragment: string) {
+    return new Promise((res) => {
+      this.socket?.emit("findUsers", nameFragment, res);
+    });
+  }
+
   disconnect() {
     this.socket?.disconnect();
     this.socket = null;

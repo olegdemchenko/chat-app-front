@@ -21,6 +21,8 @@
   }
   ,
   "chat": {
-    "label": "chat-app"
+    "label": "chat-app",
+    "searchLabel": "Search here",
+    "notFound": "We found no match with your request"
   }
 }
