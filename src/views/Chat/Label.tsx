@@ -6,11 +6,11 @@ function Label() {
   const { t } = useTranslation();
   return (
     <Typography
-      component="h3"
+      component="h4"
       sx={{
         color: "#fff",
-        fontSize: "2rem",
         fontWeight: "bold",
+        letterSpacing: "2px",
         textTransform: "uppercase",
       }}
     >
