@@ -19,26 +19,36 @@ type SearchResultsProps = {
   results: ReadonlyArray<Participant>;
 };
 
+const listStyles = {
+  position: "absolute",
+  top: "80px",
+  left: 0,
+  width: "100%",
+  maxHeight: "300px",
+  overflow: "hidden",
+  borderRadius: "5px",
+  bgcolor: "background.paper",
+};
+
+const avatarIconStyles = { width: "40px", height: "40px" };
+
+const statusIconStyles = {
+  width: "20px",
+  height: "20px",
+  position: "absolute",
+  bottom: "-5px",
+  right: "-10px",
+};
+
 function SearchResults({ results }: SearchResultsProps) {
   const { t } = useTranslation();
   return (
-    <List
-      sx={{
-        position: "absolute",
-        top: "80px",
-        left: 0,
-        width: "100%",
-        maxHeight: "300px",
-        overflow: "hidden",
-        borderRadius: "5px",
-        bgcolor: "background.paper",
-      }}
-    >
+    <List sx={listStyles}>
       {results.length === 0 ? (
         <ListItem>
           <ListItemAvatar>
             <Avatar>
-              <HelpOutlineIcon sx={{ width: "40px", height: "40px" }} />
+              <HelpOutlineIcon sx={avatarIconStyles} />
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary={t("chat.notFound")} />
@@ -49,26 +59,15 @@ function SearchResults({ results }: SearchResultsProps) {
             <ListItem>
               <ListItemAvatar>
                 <Avatar sx={{ overflow: "visible" }}>
-                  <AccountCircleIcon sx={{ width: "40px", height: "40px" }} />
+                  <AccountCircleIcon sx={avatarIconStyles} />
                   {isOnline ? (
                     <CheckCircleIcon
-                      sx={{
-                        width: "20px",
-                        height: "20px",
-                        position: "absolute",
-                        bottom: "-5px",
-                        right: "-10px",
-                        color: green["500"],
-                      }}
+                      sx={{ ...statusIconStyles, color: green["500"] }}
                     />
                   ) : (
                     <RemoveCircleIcon
                       sx={{
-                        width: "20px",
-                        height: "20px",
-                        position: "absolute",
-                        bottom: "-5px",
-                        right: "-10px",
+                        ...statusIconStyles,
                         color: red["500"],
                       }}
                     />

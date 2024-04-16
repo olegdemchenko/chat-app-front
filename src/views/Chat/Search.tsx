@@ -8,6 +8,28 @@ import chatService from "../../services/chat";
 import { Participant } from "../../types";
 import SearchResults from "./SearchResults";
 
+const searchIconStyles = {
+  color: "#fff",
+  width: "30px",
+  height: "30px",
+  transition: "color 100ms ease-in",
+  ".Mui-focused &": {
+    color: blue["900"],
+  },
+};
+
+const searchInputStyles = {
+  color: "#fff",
+  padding: "10px 20px",
+  bgcolor: blue["500"],
+  borderRadius: "5px",
+  transition: "background-color 100ms ease-in",
+  "&.Mui-focused": {
+    bgcolor: blue["200"],
+    color: blue["900"],
+  },
+};
+
 function Search() {
   const { t } = useTranslation();
   const [text, setText] = useState<string>("");
@@ -39,33 +61,13 @@ function Search() {
         placeholder={t("chat.searchLabel")}
         startAdornment={
           <InputAdornment position="start">
-            <SearchIcon
-              sx={{
-                color: "#fff",
-                width: "30px",
-                height: "30px",
-                transition: "color 100ms ease-in",
-                ".Mui-focused &": {
-                  color: blue["900"],
-                },
-              }}
-            />
+            <SearchIcon sx={searchIconStyles} />
           </InputAdornment>
         }
         disableUnderline
         value={text}
         onChange={handleTextChange}
-        sx={{
-          color: "#fff",
-          padding: "10px 20px",
-          bgcolor: blue["500"],
-          borderRadius: "5px",
-          transition: "background-color 100ms ease-in",
-          "&.Mui-focused": {
-            bgcolor: blue["200"],
-            color: blue["900"],
-          },
-        }}
+        sx={searchInputStyles}
       />
       {debouncedText.length > 0 && <SearchResults results={foundUsers} />}
     </Box>
