@@ -8,7 +8,7 @@ function Content() {
       <Grid container sx={{ height: "100%" }}>
         <Grid
           item
-          md={4}
+          md={3}
           sx={{
             height: "100%",
             borderRadius: "0 10px 10px 0",
