@@ -43,9 +43,9 @@
   "scripts": {
     "postinstall": "husky",
     "lint": "yarn run eslint .",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "test": "DISABLE_ESLINT_PLUGIN=true react-scripts test",
     "lint-staged": "lint-staged",
     "eject": "react-scripts eject"
   },
