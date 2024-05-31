@@ -2,42 +2,18 @@ import React from "react";
 import Avatar from "@mui/material/Avatar";
 import LoginIcon from "@mui/icons-material/Login";
 import Typography from "@mui/material/Typography";
-import {
-  ActionFunction,
-  redirect,
-  useSubmit,
-  useNavigation,
-} from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
-import { authAPI, useLoginMutation } from "../services/auth";
-import { store } from "../store";
+import { useLoginMutation } from "../services/auth";
 import Copyright from "../components/Copyright";
-import AuthForm, {
-  AuthorizationErrors,
-  FormState,
-} from "../components/AuthForm";
+import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
 import SocialMediaLinks from "../components/SocialMediaLinks";
 import PageLink from "../components/PageLink";
 import Backdrop from "../components/Backdrop";
 import CenteringContainer from "../components/CenteringContainer";
-
-export const loginAction: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
-  const response = await store.dispatch(
-    authAPI.endpoints.login.initiate(
-      { username, password },
-      { fixedCacheKey: "login" },
-    ),
-  );
-  if ("error" in response) {
-    return response.error;
-  }
-  return redirect("/chat");
-};
+import { routes } from "../constants";
 
 const getRelevantAuthError = (
   error: FetchBaseQueryError | SerializedError | undefined,
@@ -50,18 +26,12 @@ const getRelevantAuthError = (
 };
 
 export default function Login() {
-  const { state: navigationState } = useNavigation();
-  const [login, { error }] = useLoginMutation({ fixedCacheKey: "login" });
+  const [login, { data, error, isLoading }] = useLoginMutation();
   const { t } = useTranslation();
 
-  const submit = useSubmit();
-
-  const handleSubmit = (state: FormState) => {
-    submit(state, {
-      method: "POST",
-      action: "/login",
-    });
-  };
+  if (data) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <CenteringContainer>
@@ -74,12 +44,12 @@ export default function Login() {
       <AuthForm
         variant="login"
         authError={getRelevantAuthError(error)}
-        onSubmit={handleSubmit}
+        onSubmit={login}
       />
-      <PageLink href="/signup" text={t("auth.signupLink")} />
+      <PageLink href={`/${routes.signup}`} text={t("auth.signupLink")} />
       <SocialMediaLinks />
       <Copyright />
-      <Backdrop isOpen={navigationState === "submitting"} />
+      <Backdrop isOpen={isLoading} />
     </CenteringContainer>
   );
 }

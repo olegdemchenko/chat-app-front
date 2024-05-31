@@ -5,7 +5,7 @@ module.exports = function (app) {
     `/api/auth`,
     createProxyMiddleware({
       // TODO add prod host
-      target: "https://localhost:443",
+      target: "http://localhost:4000",
       changeOrigin: true,
       secure: false,
     }),
