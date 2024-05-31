@@ -1,42 +1,41 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Login, { loginAction } from "./views/Login";
+import Login from "./views/Login";
 import Chat from "./views/Chat";
 import ErrorPage from "./views/ErrorPage";
-import ProtectedRoute, {
-  protectedRootLoader,
-} from "./components/ProtectedRoute";
-import SignUp, { signupAction } from "./views/SignUp";
+import SignUp from "./views/SignUp";
 import VerifyEmail from "./views/VerifyEmail";
 import VerificationSuccess from "./views/VerificationSuccess";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { routes } from "./constants";
 
 function Router() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <ProtectedRoute />,
-      loader: protectedRootLoader,
       errorElement: <ErrorPage />,
       children: [
         {
-          path: "login",
-          action: loginAction,
+          index: true,
+          element: (
+            <ProtectedRoute>
+              <Chat />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: routes.login,
           element: <Login />,
         },
         {
-          path: "signup",
-          action: signupAction,
+          path: routes.signup,
           element: <SignUp />,
         },
         {
-          path: "verify_email",
+          path: routes.verifyEmail,
           element: <VerifyEmail />,
         },
-        { path: "email_verify_success", element: <VerificationSuccess /> },
-        {
-          path: "chat",
-          element: <Chat />,
-        },
+        { path: routes.verificationSuccess, element: <VerificationSuccess /> },
       ],
     },
   ]);
