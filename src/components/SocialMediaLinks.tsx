@@ -5,14 +5,15 @@ import { Grid, Link } from "@mui/material";
 
 function SocialMediaLinks() {
   return (
+    // TODO add links after the auth functionality via social networks is done
     <Grid container justifyContent="center" gap={3} sx={{ mt: 2 }}>
       <Grid item>
-        <Link href="/api/auth/facebook">
+        <Link href="/">
           <FacebookIcon color="primary" sx={{ fontSize: 45 }} />
         </Link>
       </Grid>
       <Grid item>
-        <Link href="/api/auth/google">
+        <Link href="/">
           <GoogleIcon color="error" sx={{ fontSize: 45 }} />
         </Link>
       </Grid>

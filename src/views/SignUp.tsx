@@ -1,44 +1,19 @@
 import React from "react";
-import {
-  ActionFunction,
-  redirect,
-  useSubmit,
-  useNavigation,
-} from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
-import { authAPI, useSignupMutation } from "../services/auth";
-import { store } from "../store";
+import { useSignupMutation } from "../services/auth";
 import Copyright from "../components/Copyright";
-import AuthForm, {
-  AuthorizationErrors,
-  FormState,
-} from "../components/AuthForm";
+import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
 import SocialMediaLinks from "../components/SocialMediaLinks";
 import PageLink from "../components/PageLink";
 import Backdrop from "../components/Backdrop";
 import CenteringContainer from "../components/CenteringContainer";
-
-export const signupAction: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
-  const email = formData.get("email") as string;
-  const response = await store.dispatch(
-    authAPI.endpoints.signup.initiate(
-      { username, password, email },
-      { fixedCacheKey: "signup" },
-    ),
-  );
-  if ("error" in response) {
-    return response.error;
-  }
-  return redirect("/verify_email");
-};
+import { routes } from "../constants";
 
 const getRelevantAuthError = (
   error: FetchBaseQueryError | SerializedError | undefined,
@@ -59,17 +34,11 @@ const getRelevantAuthError = (
 
 function SignUp() {
   const { t } = useTranslation();
-  const { state: navigationState } = useNavigation();
-  const [signup, { error }] = useSignupMutation({ fixedCacheKey: "signup" });
+  const [signup, { data, error, isLoading }] = useSignupMutation();
 
-  const submit = useSubmit();
-
-  const handleSubmit = (state: FormState) => {
-    submit(state, {
-      method: "POST",
-      action: "/signup",
-    });
-  };
+  if (data) {
+    return <Navigate to={`/${routes.verifyEmail}`} />;
+  }
 
   return (
     <CenteringContainer>
@@ -82,12 +51,12 @@ function SignUp() {
       <AuthForm
         variant="signup"
         authError={getRelevantAuthError(error)}
-        onSubmit={handleSubmit}
+        onSubmit={signup}
       />
-      <PageLink href="/login" text={t("auth.signinLink")} />
+      <PageLink href={`/${routes.login}`} text={t("auth.signinLink")} />
       <SocialMediaLinks />
       <Copyright />
-      <Backdrop isOpen={navigationState === "submitting"} />
+      <Backdrop isOpen={isLoading} />
     </CenteringContainer>
   );
 }
