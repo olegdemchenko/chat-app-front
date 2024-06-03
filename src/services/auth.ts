@@ -21,11 +21,10 @@ export const authAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `/api/auth`,
   }),
-  tagTypes: ["User"],
+  keepUnusedDataFor: 0,
   endpoints: (builder) => ({
     identifyMe: builder.query<UserAuthData, void>({
       query: () => "/me",
-      providesTags: ["User"],
     }),
     login: builder.mutation<UserAuthData, LoginPayload>({
       query: (payload) => ({
@@ -33,7 +32,6 @@ export const authAPI = createApi({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["User"],
     }),
     signup: builder.mutation<SignupResponse, SignupPayload>({
       query: (payload) => ({
@@ -41,7 +39,6 @@ export const authAPI = createApi({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["User"],
     }),
   }),
 });
