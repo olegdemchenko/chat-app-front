@@ -32,9 +32,13 @@ const searchInputStyles = {
 
 function Search() {
   const { t } = useTranslation();
+  const [isFocused, setIsFocused] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [foundUsers, setFoundUsers] = useState<ReadonlyArray<Participant>>([]);
   const [debouncedText] = useDebounceValue(text, 100);
+
+  const handleFocusIn = () => setIsFocused(true);
+  const handleFocusOut = () => setIsFocused(false);
 
   useEffect(() => {
     (async () => {
@@ -43,6 +47,7 @@ function Search() {
           const results = (await chatService.findUsers(
             debouncedText,
           )) as ReadonlyArray<Participant>;
+          console.log("search results", results);
           setFoundUsers(results);
         } catch (e) {
           console.error(e);
@@ -55,7 +60,12 @@ function Search() {
     setText(e.target.value);
 
   return (
-    <Box component="div" sx={{ position: "relative", paddingY: "15px" }}>
+    <Box
+      component="div"
+      sx={{ position: "relative", paddingY: "15px" }}
+      onFocus={handleFocusIn}
+      onBlur={handleFocusOut}
+    >
       <Input
         fullWidth
         placeholder={t("chat.searchLabel")}
@@ -69,7 +79,9 @@ function Search() {
         onChange={handleTextChange}
         sx={searchInputStyles}
       />
-      {debouncedText.length > 0 && <SearchResults results={foundUsers} />}
+      {debouncedText.length > 0 && isFocused && (
+        <SearchResults results={foundUsers} />
+      )}
     </Box>
   );
 }
