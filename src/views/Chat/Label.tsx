@@ -8,6 +8,8 @@ function Label() {
     <Typography
       component="h4"
       sx={{
+        padding: 5,
+        paddingBottom: 0,
         color: "#fff",
         fontWeight: "bold",
         letterSpacing: "2px",

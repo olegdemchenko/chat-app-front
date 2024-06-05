@@ -1,21 +1,31 @@
-import { Box } from "@mui/material";
 import React from "react";
-import Label from "./Label";
-import Search from "./Search";
+import { Box, Grid } from "@mui/material";
 
-function Aside() {
+type AsideProps = {
+  children: React.ReactNode;
+};
+
+function Aside({ children }: AsideProps) {
   return (
-    <Box
-      component="aside"
+    <Grid
+      item
+      md={3}
       sx={{
         height: "100%",
-        bgcolor: "primary.main",
-        padding: 5,
+        borderRadius: "0 10px 10px 0",
+        overflow: "hidden",
       }}
     >
-      <Label />
-      <Search />
-    </Box>
+      <Box
+        component="aside"
+        sx={{
+          height: "100%",
+          bgcolor: "primary.main",
+        }}
+      >
+        {children}
+      </Box>
+    </Grid>
   );
 }
 

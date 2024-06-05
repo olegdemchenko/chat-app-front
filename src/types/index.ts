@@ -10,8 +10,7 @@ export type UserAuthData = {
 };
 
 export type Participant = {
-  id: string;
+  userId: string;
   name: string;
-  email: string;
   isOnline: boolean;
 };
