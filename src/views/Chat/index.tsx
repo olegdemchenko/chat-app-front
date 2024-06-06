@@ -10,8 +10,11 @@ import Label from "./Label";
 import Search from "./Search";
 import Backdrop from "../../components/Backdrop";
 import { Participant } from "../../types";
+import ContactsList from "./ContactsList";
+import { useTranslation } from "react-i18next";
 
 function Chat() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [serviceConnecting, setServiceConnecting] = useState<boolean>(false);
   const token = useSelector(selectCurrentUserToken);
@@ -21,6 +24,11 @@ function Chat() {
   const [debouncedText] = useDebounceValue(text, 100);
 
   const [foundUsers, setFoundUsers] = useState<ReadonlyArray<Participant>>([]);
+
+  const handleDropSearchResults = () => {
+    setFoundUsers([]);
+    setText("");
+  };
 
   useEffect(() => {
     (async () => {
@@ -41,15 +49,16 @@ function Chat() {
 
   useEffect(() => {
     (async () => {
-      if (debouncedText.length > 0) {
-        try {
-          const results = (await serviceInstance.findUsers(
-            debouncedText,
-          )) as ReadonlyArray<Participant>;
-          setFoundUsers(results);
-        } catch (e) {
-          console.error(e);
-        }
+      try {
+        const results =
+          debouncedText.length > 0
+            ? ((await serviceInstance.findUsers(
+                debouncedText,
+              )) as ReadonlyArray<Participant>)
+            : [];
+        setFoundUsers(results);
+      } catch (e) {
+        console.error(e);
       }
     })();
   }, [debouncedText]);
@@ -64,8 +73,17 @@ function Chat() {
           <Search
             text={text}
             onChange={setText}
-            onDropText={() => setText("")}
+            onDropText={handleDropSearchResults}
           />
+          {debouncedText.length > 0 && (
+            <ContactsList
+              header={t("chat.searchResults")}
+              emptyListPlaceholder={t("chat.noUsersFound", {
+                searchText: debouncedText,
+              })}
+              contacts={foundUsers}
+            />
+          )}
         </Aside>
       )}
     </Container>
