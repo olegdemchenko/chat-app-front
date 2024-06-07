@@ -75,7 +75,7 @@ function Chat() {
             onChange={setText}
             onDropText={handleDropSearchResults}
           />
-          {debouncedText.length > 0 && (
+          {text.length > 0 && (
             <ContactsList
               header={t("chat.searchResults")}
               emptyListPlaceholder={t("chat.noUsersFound", {
