@@ -36,7 +36,7 @@ function RoomItem({
       secondaryAction={
         deletable && (
           <IconButton sx={{ right: 5 }} onClick={onDelete}>
-            <DeleteForeverIcon sx={{ color: "error.main" }} />
+            <DeleteForeverIcon sx={{ color: "white" }} />
           </IconButton>
         )
       }
