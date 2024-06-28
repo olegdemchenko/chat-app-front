@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Input, InputAdornment } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useDebounceValue } from "usehooks-ts";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { blue } from "@mui/material/colors";
@@ -36,17 +37,28 @@ const searchInputStyles = {
   },
 };
 
-type SearchProps = {
-  text: string;
-  onChange: (text: string) => void;
-  onDropText: () => void;
+type NameInputProps = {
+  query: string;
+  onEnter: (text: string) => void;
+  onDrop: () => void;
 };
 
-function Search({ text, onChange, onDropText }: SearchProps) {
+function NameInput({ query, onEnter, onDrop }: NameInputProps) {
   const { t } = useTranslation();
+  // const [text, setText] = useState(initialText);
+  // const [debouncedText] = useDebounceValue(text, 100);
+
+  // useEffect(() => {
+  //   onEnter(debouncedText);
+  // }, [debouncedText]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange(e.target.value);
+    onEnter(e.target.value);
+
+  // const handleDrop = () => {
+  //   setText("");
+  //   onDrop();
+  // };
 
   return (
     <Box
@@ -63,13 +75,13 @@ function Search({ text, onChange, onDropText }: SearchProps) {
         }
         endAdornment={
           <InputAdornment position="end">
-            {text.length > 0 && (
-              <CloseIcon onClick={onDropText} sx={closeIconStyles} />
+            {query.length > 0 && (
+              <CloseIcon onClick={onDrop} sx={closeIconStyles} />
             )}
           </InputAdornment>
         }
         disableUnderline
-        value={text}
+        value={query}
         onChange={handleTextChange}
         sx={searchInputStyles}
       />
@@ -77,4 +89,4 @@ function Search({ text, onChange, onDropText }: SearchProps) {
   );
 }
 
-export default Search;
+export default NameInput;

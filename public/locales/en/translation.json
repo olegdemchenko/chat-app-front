@@ -22,9 +22,14 @@
   ,
   "chat": {
     "label": "chat-app",
-    "searchLabel": "Search here",
+    "searchLabel": "Find your friends here",
     "searchResults": "Search results",
     "contacts": "Contacts",
-    "noUsersFound": "Unfortunately, we couldn't find any users, whose names include '{{ searchText }}'"
+    "noUsersFound": "Unfortunately, we couldn't find any users, whose names include '{{ query }}'",
+    "noRooms": "You have no contacts yet",
+    "deleteContact": "Delete contact",
+    "deletePopupText": "Are you sure you want to delete the conversation with this user",
+    "delete": "Delete",
+    "close": "Close"
   }
 }

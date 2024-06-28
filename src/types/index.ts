@@ -14,3 +14,8 @@ export type Participant = {
   name: string;
   isOnline: boolean;
 };
+
+export type Room = {
+  roomId: string;
+  participants: Participant[];
+};
