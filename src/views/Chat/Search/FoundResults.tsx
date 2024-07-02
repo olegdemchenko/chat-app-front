@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { Participant } from "../../../types";
 import ContactAvatar from "../RoomsList/ContactAvatar";
 import { Results } from "..";
-import Box from "@mui/material/Box";
 
 type FoundResultsProps = {
   results: Results;

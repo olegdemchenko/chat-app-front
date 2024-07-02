@@ -26,13 +26,45 @@ const initialResults: Results = {
   query: "",
 };
 
+const changeUserStatus = (
+  room: Room,
+  userId: Participant["userId"],
+  isOnline: boolean,
+) => {
+  return {
+    ...room,
+    participants: room.participants.map((participant) => {
+      return {
+        ...participant,
+        isOnline:
+          userId === participant.userId ? isOnline : participant.isOnline,
+      };
+    }),
+  };
+};
+
 function Chat({ socket }: ChatProps) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [newRoom, setNewRoom] = useState<Room | null>(null);
+
   useEffect(() => {
     socket.emit(ChatEvents.getUserRooms, setRooms);
   }, []);
+
+  useEffect(() => {
+    socket.on("userJoin", (userId: Participant["userId"]) => {
+      setRooms(rooms.map((room) => changeUserStatus(room, userId, true)));
+    });
+    socket.on("userLeave", (userId: Participant["userId"]) => {
+      setRooms(rooms.map((room) => changeUserStatus(room, userId, false)));
+    });
+
+    return () => {
+      socket.off("userJoin");
+      socket.off("userLeave");
+    };
+  }, [rooms]);
 
   const [searchResults, setSearchResults] = useState<Results>(initialResults);
 
@@ -142,130 +174,6 @@ function Chat({ socket }: ChatProps) {
       </>
     </Container>
   );
-
-  // const navigate = useNavigate();
-  // const [serviceConnecting, setServiceConnecting] = useState<boolean>(false);
-  // const token = useSelector(selectCurrentUserToken);
-  // const [serviceInstance] = useState(new ChatService());
-  // const [text, setText] = useState<string>("");
-  // const [debouncedText] = useDebounceValue(text, 100);
-  // const [searchResults, setSearchResults] = useState<Results>(initialResults);
-  // const [selectedContact, setSelectedContact] = useState<Participant | null>(
-  //   null,
-  // );
-  // const [rooms, setRooms] = useState<Room[]>([]);
-  // const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  // const handleDropSearchResults = () => {
-  //   setSearchResults(initialResults);
-  //   setText("");
-  //   setSelectedContact(null);
-  // };
-  // const handleSelectContact = (contact: Participant) => {
-  //   setSelectedContact(contact);
-  //   setSelectedRoom(null);
-  // };
-  // const handleSelectRoom = (room: Room) => {
-  //   setSelectedContact(null);
-  //   setSelectedRoom(room);
-  // };
-  // const handleCreateNewRoom = async () => {
-  //   const newRoomId = await serviceInstance.createRoom(
-  //     selectedContact?.userId as Participant["userId"],
-  //   );
-  //   const newRoom = {
-  //     roomId: newRoomId,
-  //     participants: [selectedContact as Participant],
-  //   };
-  //   setRooms([newRoom, ...rooms]);
-  //   setSearchResults({
-  //     query: searchResults.query,
-  //     users: searchResults.users.filter(
-  //       ({ userId }) => userId !== selectedContact?.userId,
-  //     ),
-  //   });
-  //   handleSelectRoom(newRoom);
-  // };
-  // const handleDeleteRoom = async (deletedRoomId: Room["roomId"]) => {
-  //   await serviceInstance.deleteRoom(deletedRoomId);
-  //   setRooms(rooms.filter(({ roomId }) => roomId !== deletedRoomId));
-  //   setSelectedRoom(null);
-  // };
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       setServiceConnecting(true);
-  //       await serviceInstance.connect(token!);
-  //       const rooms = await serviceInstance.getRooms();
-  //       setRooms(rooms);
-  //     } catch (e) {
-  //       const error = e as Error;
-  //       if (error.message === "User token is invalid") {
-  //         navigate("/login");
-  //       }
-  //       console.error(error);
-  //     } finally {
-  //       setServiceConnecting(false);
-  //     }
-  //   })();
-  // }, []);
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const foundUsers = (await serviceInstance.findUsers(
-  //         debouncedText,
-  //       )) as ReadonlyArray<Participant>;
-  //       const contactedUsers = rooms.reduce(
-  //         (acc, { participants }) => [...acc, ...participants],
-  //         [] as Participant[],
-  //       );
-  //       const notContactedUsers = _.differenceBy(
-  //         foundUsers,
-  //         contactedUsers,
-  //         "userId",
-  //       );
-  //       setSearchResults({ users: notContactedUsers, query: debouncedText });
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   })();
-  // }, [debouncedText]);
-  // return (
-  //   <Container>
-  //     {serviceConnecting ? (
-  //       <Backdrop isOpen />
-  //     ) : (
-  //       <>
-  //         <Aside>
-  //           <Label />
-  //           <Search
-  //             text={text}
-  //             onChange={setText}
-  //             onDropText={handleDropSearchResults}
-  //           />
-  //           <SearchResults
-  //             results={searchResults}
-  //             selectedContact={selectedContact}
-  //             onSelect={handleSelectContact}
-  //           />
-  //           <RoomsList
-  //             rooms={rooms}
-  //             selectedRoom={selectedRoom}
-  //             onSelect={handleSelectRoom}
-  //             onDelete={handleDeleteRoom}
-  //           />
-  //         </Aside>
-  //         {selectedRoom && <CurrentRoom room={selectedRoom} />}
-  //         {selectedContact && (
-  //           <CreateRoom
-  //             secondParticipantId={selectedContact.userId}
-  //             onCreate={handleCreateNewRoom}
-  //           />
-  //         )}
-  //       </>
-  //     )}
-  //   </Container>
-  // );
-  return <div>chat</div>;
 }
 
 export default Chat;
