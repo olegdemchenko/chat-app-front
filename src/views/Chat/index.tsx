@@ -17,10 +17,12 @@ type ChatProps = {
 export type Results = {
   users: readonly Participant[];
   query: string;
+  count: number;
 };
 
 const initialResults: Results = {
   users: [],
+  count: 0,
   query: "",
 };
 
@@ -39,9 +41,29 @@ function Chat({ socket }: ChatProps) {
       setSearchResults(initialResults);
       return;
     }
-    socket.emit(ChatEvents.findUsers, query, (users: Participant[]) => {
-      setSearchResults({ query, users });
-    });
+    socket.emit(
+      ChatEvents.findUsers,
+      query,
+      0,
+      (users: Participant[], count: number) => {
+        setSearchResults({ query, users, count });
+      },
+    );
+  };
+
+  const handleLoadMoreResults = (page: number, successCallback: () => void) => {
+    socket.emit(
+      ChatEvents.findUsers,
+      searchResults.query,
+      page,
+      (foundUsers: Participant[]) => {
+        setSearchResults({
+          ...searchResults,
+          users: [...searchResults.users, ...foundUsers],
+        });
+        successCallback();
+      },
+    );
   };
 
   const handleClearSearchResults = () => setSearchResults(initialResults);
@@ -98,6 +120,7 @@ function Chat({ socket }: ChatProps) {
           <Search
             results={searchResults}
             onSubmit={handleEnterQuery}
+            onLoadMore={handleLoadMoreResults}
             onClear={handleClearSearchResults}
             onSelect={handleSelectParticipant}
           />
