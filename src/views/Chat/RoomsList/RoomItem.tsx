@@ -4,7 +4,8 @@ import { ListItem } from "@mui/material";
 import cn from "classnames";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import IconButton from "@mui/material/IconButton";
-import ContactAvatar from "./ContactAvatar";
+import ContactAvatar from "../../../components/ContactAvatar";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
 
 type RoomItemProps = {
   selected: boolean;
@@ -41,7 +42,9 @@ function RoomItem({
         )
       }
     >
-      <ContactAvatar isOnline={isOnline} />
+      <ListItemAvatar>
+        <ContactAvatar isOnline={isOnline} />
+      </ListItemAvatar>
       <ListItemText primary={name} sx={{ color: "white" }} />
     </ListItem>
   );

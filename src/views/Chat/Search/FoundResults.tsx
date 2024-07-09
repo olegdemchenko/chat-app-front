@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
-import { ListItem, Typography } from "@mui/material";
+import { ListItem, Typography, ListItemAvatar } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Participant } from "../../../types";
-import ContactAvatar from "../RoomsList/ContactAvatar";
+import ContactAvatar from "../../../components/ContactAvatar";
 import { Results } from "..";
 
 type FoundResultsProps = {
@@ -82,7 +82,9 @@ function FoundResults({
               onSelect({ userId, name, isOnline });
             }}
           >
-            <ContactAvatar isOnline={isOnline} />
+            <ListItemAvatar>
+              <ContactAvatar isOnline={isOnline} />
+            </ListItemAvatar>
             <ListItemText primary={name} sx={{ color: "white" }} />
           </ListItem>
         ))

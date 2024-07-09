@@ -10,8 +10,8 @@ import RoomItem from "./RoomItem";
 type RoomsListProps = {
   rooms: Room[];
   newRoom: Room | null;
-  selectedRoom: Room | null;
-  onSelect: (room: Room) => void;
+  selectedRoom?: Room;
+  onSelect: (roomId: Room["roomId"]) => void;
   onDelete: (roomId: Room["roomId"]) => void;
 };
 
@@ -57,7 +57,7 @@ function RoomsList({
                 selected={selectedRoom?.roomId === room.roomId}
                 isOnline={room.participants[0].isOnline}
                 deletable
-                onSelect={() => onSelect(room)}
+                onSelect={() => onSelect(room.roomId)}
                 onDelete={() => {
                   setDeleteRoom(room);
                   handleToggleModal();

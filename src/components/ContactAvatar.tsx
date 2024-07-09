@@ -1,5 +1,4 @@
 import React from "react";
-import { ListItemAvatar } from "@mui/material";
 import { Avatar } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -19,24 +18,22 @@ const statusIconStyles = {
 
 function ContactAvatar({ isOnline }: ContactAvatarProps) {
   return (
-    <ListItemAvatar>
-      <Avatar sx={{ overflow: "visible" }}>
-        <AccountCircleIcon />
-        {isOnline ? (
-          <CheckCircleIcon
-            sx={statusIconStyles}
-            fontSize="small"
-            color="success"
-          />
-        ) : (
-          <RemoveCircleIcon
-            sx={statusIconStyles}
-            fontSize="small"
-            color="error"
-          />
-        )}
-      </Avatar>
-    </ListItemAvatar>
+    <Avatar sx={{ overflow: "visible" }}>
+      <AccountCircleIcon />
+      {isOnline ? (
+        <CheckCircleIcon
+          sx={statusIconStyles}
+          fontSize="small"
+          color="success"
+        />
+      ) : (
+        <RemoveCircleIcon
+          sx={statusIconStyles}
+          fontSize="small"
+          color="error"
+        />
+      )}
+    </Avatar>
   );
 }
 

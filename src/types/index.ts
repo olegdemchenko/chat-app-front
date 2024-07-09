@@ -15,7 +15,15 @@ export type Participant = {
   isOnline: boolean;
 };
 
+export type Message = {
+  messageId: string;
+  author: string;
+  text: string;
+  createdAt: string;
+};
+
 export type Room = {
   roomId: string;
   participants: Participant[];
+  messages: Message[];
 };

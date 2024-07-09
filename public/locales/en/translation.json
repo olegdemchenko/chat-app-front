@@ -30,6 +30,9 @@
     "deleteContact": "Delete contact",
     "deletePopupText": "Are you sure you want to delete the conversation with this user",
     "delete": "Delete",
-    "close": "Close"
+    "close": "Close",
+    "startNewConversation": "You're starting a new conversation",
+    "typeMessage": "Type your first message below.",
+    "inputPlaceholder": "Type a message"
   }
 }

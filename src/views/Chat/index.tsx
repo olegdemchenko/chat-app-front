@@ -3,12 +3,11 @@ import { Socket } from "socket.io-client";
 import Container from "./Container";
 import Aside from "./Aside";
 import Label from "./Label";
-import { Participant, Room } from "../../types";
+import { Message, Participant, Room } from "../../types";
 import Search from "./Search";
-import RoomsList from "./RoomsList/RoomsList";
-import CurrentRoom from "./CurrentRoom";
-import CreateRoom from "./CreateRoom";
+import RoomsList from "./RoomsList";
 import { ChatEvents } from "../../constants";
+import Messages from "./Messages";
 
 type ChatProps = {
   socket: Socket;
@@ -45,7 +44,9 @@ const changeUserStatus = (
 
 function Chat({ socket }: ChatProps) {
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [selectedRoomId, setSelectedRoomId] = useState<Room["roomId"] | null>(
+    null,
+  );
   const [newRoom, setNewRoom] = useState<Room | null>(null);
 
   useEffect(() => {
@@ -53,18 +54,40 @@ function Chat({ socket }: ChatProps) {
   }, []);
 
   useEffect(() => {
-    socket.on("userJoin", (userId: Participant["userId"]) => {
-      setRooms(rooms.map((room) => changeUserStatus(room, userId, true)));
+    socket.on(ChatEvents.userJoin, (userId: Participant["userId"]) => {
+      setRooms((rooms) =>
+        rooms.map((room) => changeUserStatus(room, userId, true)),
+      );
     });
-    socket.on("userLeave", (userId: Participant["userId"]) => {
-      setRooms(rooms.map((room) => changeUserStatus(room, userId, false)));
+    socket.on(ChatEvents.userLeave, (userId: Participant["userId"]) => {
+      setRooms((rooms) =>
+        rooms.map((room) => changeUserStatus(room, userId, false)),
+      );
     });
+    socket.on(ChatEvents.newRoom, (newRoom: Room) => {
+      setRooms((rooms) => [newRoom, ...rooms]);
+    });
+    socket.on(
+      ChatEvents.message,
+      (roomId: Room["roomId"], message: Message) => {
+        setRooms((rooms) =>
+          rooms.map((room) => {
+            if (room.roomId === roomId) {
+              return { ...room, messages: [...room.messages, message] };
+            }
+            return room;
+          }),
+        );
+      },
+    );
 
     return () => {
-      socket.off("userJoin");
-      socket.off("userLeave");
+      socket.off(ChatEvents.userJoin);
+      socket.off(ChatEvents.userLeave);
+      socket.off(ChatEvents.newRoom);
+      socket.off(ChatEvents.message);
     };
-  }, [rooms]);
+  }, []);
 
   const [searchResults, setSearchResults] = useState<Results>(initialResults);
 
@@ -105,23 +128,24 @@ function Chat({ socket }: ChatProps) {
     );
     if (existingRoom) {
       setNewRoom(null);
-      setSelectedRoom(existingRoom);
+      setSelectedRoomId(existingRoom.roomId);
     } else {
       setNewRoom({
         roomId: "newRoomId",
         participants: [participant],
+        messages: [],
       });
-      setSelectedRoom(null);
+      setSelectedRoomId(null);
     }
     handleClearSearchResults();
   };
 
-  const handleSelectRoom = (room: Room) => {
-    setSelectedRoom(room);
+  const handleSelectRoom = (roomId: Room["roomId"]) => {
+    setSelectedRoomId(roomId);
     setNewRoom(null);
   };
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = (callback: (roomId: Room["roomId"]) => void) => {
     socket.emit(
       ChatEvents.createRoom,
       newRoom?.participants[0].userId,
@@ -129,10 +153,12 @@ function Chat({ socket }: ChatProps) {
         const createdRoom = {
           roomId: newRoomId,
           participants: [...newRoom!.participants],
+          messages: [],
         };
         setRooms([createdRoom, ...rooms]);
         setNewRoom(null);
-        setSelectedRoom(createdRoom);
+        setSelectedRoomId(createdRoom.roomId);
+        callback(createdRoom.roomId);
       },
     );
   };
@@ -140,9 +166,24 @@ function Chat({ socket }: ChatProps) {
   const handleDeleteRoom = (deletedRoomId: Room["roomId"]) => {
     socket.emit(ChatEvents.leaveRoom, deletedRoomId, () => {
       setRooms(rooms.filter(({ roomId }) => roomId !== deletedRoomId));
-      setSelectedRoom(null);
+      setSelectedRoomId(null);
     });
   };
+
+  const handleSendMessage = (roomId: Room["roomId"], text: string) => {
+    socket.emit("message", roomId, text, (newMessage: Message) => {
+      setRooms((rooms) =>
+        rooms.map((room) => {
+          if (room.roomId === roomId) {
+            return { ...room, messages: [...room.messages, newMessage] };
+          }
+          return room;
+        }),
+      );
+    });
+  };
+
+  const selectedRoom = rooms.find(({ roomId }) => roomId === selectedRoomId);
 
   return (
     <Container>
@@ -164,13 +205,11 @@ function Chat({ socket }: ChatProps) {
             onDelete={handleDeleteRoom}
           />
         </Aside>
-        {newRoom && (
-          <CreateRoom
-            secondParticipantId={newRoom.participants[0].userId}
-            onCreate={handleCreateRoom}
-          />
-        )}
-        {selectedRoom && <CurrentRoom room={selectedRoom} />}
+        <Messages
+          room={newRoom || selectedRoom}
+          onCreateRoom={handleCreateRoom}
+          onSendMessage={handleSendMessage}
+        />
       </>
     </Container>
   );
