@@ -6,9 +6,17 @@ import MessageItem from "./MessageItem";
 type MessagesListProps = {
   messages: Message[];
   participants: Participant[];
+  onUpdateMessage: (
+    messageId: Message["messageId"],
+    newText: Message["text"],
+  ) => void;
 };
 
-function MessagesList({ messages, participants }: MessagesListProps) {
+function MessagesList({
+  messages,
+  participants,
+  onUpdateMessage,
+}: MessagesListProps) {
   return (
     <Box
       display="flex"
@@ -26,6 +34,7 @@ function MessagesList({ messages, participants }: MessagesListProps) {
           participant={participants.find(
             ({ userId }) => message.author === userId,
           )}
+          onUpdateMessage={onUpdateMessage}
         />
       ))}
     </Box>

@@ -81,11 +81,34 @@ function Chat({ socket }: ChatProps) {
       },
     );
 
+    socket.on(
+      ChatEvents.updateMessage,
+      (roomId: Room["roomId"], updatedMessage: Omit<Message, "author">) => {
+        setRooms((rooms) =>
+          rooms.map((room) => {
+            if (room.roomId === roomId) {
+              return {
+                ...room,
+                messages: room.messages.map((message) => {
+                  if (message.messageId === updatedMessage.messageId) {
+                    return { ...message, ...updatedMessage };
+                  }
+                  return message;
+                }),
+              };
+            }
+            return room;
+          }),
+        );
+      },
+    );
+
     return () => {
       socket.off(ChatEvents.userJoin);
       socket.off(ChatEvents.userLeave);
       socket.off(ChatEvents.newRoom);
       socket.off(ChatEvents.message);
+      socket.off(ChatEvents.updateMessage);
     };
   }, []);
 
@@ -183,7 +206,38 @@ function Chat({ socket }: ChatProps) {
     });
   };
 
+  const handleUpdateMessage = (
+    messageId: Message["messageId"],
+    newText: Message["text"],
+  ) => {
+    socket.emit(
+      ChatEvents.updateMessage,
+      selectedRoomId,
+      messageId,
+      newText,
+      (updatedMessage: Omit<Message, "author">) => {
+        setRooms((rooms) =>
+          rooms.map((room) => {
+            if (room.roomId === selectedRoomId) {
+              return {
+                ...room,
+                messages: room.messages.map((message) => {
+                  if (message.messageId === messageId) {
+                    return { ...message, ...updatedMessage };
+                  }
+                  return message;
+                }),
+              };
+            }
+            return room;
+          }),
+        );
+      },
+    );
+  };
+
   const selectedRoom = rooms.find(({ roomId }) => roomId === selectedRoomId);
+  console.log("rooms", rooms);
 
   return (
     <Container>
@@ -209,6 +263,7 @@ function Chat({ socket }: ChatProps) {
           room={newRoom || selectedRoom}
           onCreateRoom={handleCreateRoom}
           onSendMessage={handleSendMessage}
+          onUpdateMessage={handleUpdateMessage}
         />
       </>
     </Container>

@@ -19,7 +19,7 @@ export type Message = {
   messageId: string;
   author: string;
   text: string;
-  createdAt: string;
+  lastModified: string;
 };
 
 export type Room = {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid } from "@mui/material";
-import { Room } from "../../../types";
+import { Room, Message } from "../../../types";
 import StartChatting from "./StartChatting";
 import Input from "./Input";
 import Header from "./Header";
@@ -10,9 +10,18 @@ type MessagesProps = {
   room?: Room | null;
   onCreateRoom: (callback: (createdRoom: Room["roomId"]) => void) => void;
   onSendMessage: (roomId: Room["roomId"], text: string) => void;
+  onUpdateMessage: (
+    messageId: Message["messageId"],
+    newText: Message["text"],
+  ) => void;
 };
 
-function Messages({ room, onCreateRoom, onSendMessage }: MessagesProps) {
+function Messages({
+  room,
+  onCreateRoom,
+  onSendMessage,
+  onUpdateMessage,
+}: MessagesProps) {
   if (!room) {
     return null;
   }
@@ -46,7 +55,11 @@ function Messages({ room, onCreateRoom, onSendMessage }: MessagesProps) {
       {messages.length === 0 ? (
         <StartChatting />
       ) : (
-        <MessagesList messages={messages} participants={room.participants} />
+        <MessagesList
+          messages={messages}
+          participants={room.participants}
+          onUpdateMessage={onUpdateMessage}
+        />
       )}
       <Input onSubmit={handleSend} />
     </Grid>
