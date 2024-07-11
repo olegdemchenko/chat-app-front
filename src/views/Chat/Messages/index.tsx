@@ -14,6 +14,7 @@ type MessagesProps = {
     messageId: Message["messageId"],
     newText: Message["text"],
   ) => void;
+  onDeleteMessage: (messageId: Message["messageId"]) => void;
 };
 
 function Messages({
@@ -21,6 +22,7 @@ function Messages({
   onCreateRoom,
   onSendMessage,
   onUpdateMessage,
+  onDeleteMessage,
 }: MessagesProps) {
   if (!room) {
     return null;
@@ -59,6 +61,7 @@ function Messages({
           messages={messages}
           participants={room.participants}
           onUpdateMessage={onUpdateMessage}
+          onDeleteMessage={onDeleteMessage}
         />
       )}
       <Input onSubmit={handleSend} />

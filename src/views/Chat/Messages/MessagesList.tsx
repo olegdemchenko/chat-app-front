@@ -10,12 +10,14 @@ type MessagesListProps = {
     messageId: Message["messageId"],
     newText: Message["text"],
   ) => void;
+  onDeleteMessage: (messageId: Message["messageId"]) => void;
 };
 
 function MessagesList({
   messages,
   participants,
   onUpdateMessage,
+  onDeleteMessage,
 }: MessagesListProps) {
   return (
     <Box
@@ -35,6 +37,7 @@ function MessagesList({
             ({ userId }) => message.author === userId,
           )}
           onUpdateMessage={onUpdateMessage}
+          onDeleteMessage={onDeleteMessage}
         />
       ))}
     </Box>

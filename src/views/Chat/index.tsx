@@ -103,6 +103,25 @@ function Chat({ socket }: ChatProps) {
       },
     );
 
+    socket.on(
+      ChatEvents.deleteMessage,
+      (roomId: Room["roomId"], messageId: Message["messageId"]) => {
+        setRooms((rooms) =>
+          rooms.map((room) => {
+            if (room.roomId === roomId) {
+              return {
+                ...room,
+                messages: room.messages.filter(
+                  (room) => room.messageId !== messageId,
+                ),
+              };
+            }
+            return room;
+          }),
+        );
+      },
+    );
+
     return () => {
       socket.off(ChatEvents.userJoin);
       socket.off(ChatEvents.userLeave);
@@ -236,6 +255,29 @@ function Chat({ socket }: ChatProps) {
     );
   };
 
+  const handleDeleteMessage = (messageId: Message["messageId"]) => {
+    socket.emit(
+      ChatEvents.deleteMessage,
+      selectedRoom?.roomId,
+      messageId,
+      () => {
+        setRooms((rooms) =>
+          rooms.map((room) => {
+            if (room.roomId === selectedRoom?.roomId) {
+              return {
+                ...room,
+                messages: room.messages.filter(
+                  (message) => message.messageId !== messageId,
+                ),
+              };
+            }
+            return room;
+          }),
+        );
+      },
+    );
+  };
+
   const selectedRoom = rooms.find(({ roomId }) => roomId === selectedRoomId);
   console.log("rooms", rooms);
 
@@ -264,6 +306,7 @@ function Chat({ socket }: ChatProps) {
           onCreateRoom={handleCreateRoom}
           onSendMessage={handleSendMessage}
           onUpdateMessage={handleUpdateMessage}
+          onDeleteMessage={handleDeleteMessage}
         />
       </>
     </Container>

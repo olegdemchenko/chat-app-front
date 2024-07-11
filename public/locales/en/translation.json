@@ -33,6 +33,7 @@
     "close": "Close",
     "startNewConversation": "You're starting a new conversation",
     "typeMessage": "Type your first message below.",
-    "inputPlaceholder": "Type a message"
+    "inputPlaceholder": "Type a message",
+    "lastModified": "Last modified: {{ date }}"
   }
 }

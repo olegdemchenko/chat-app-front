@@ -11,8 +11,10 @@ import { formatRelative } from "date-fns";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Participant, Message } from "../../../types";
 import ContactAvatar from "../../../components/ContactAvatar";
+import { useTranslation } from "react-i18next";
 
 type MessageItem = {
   message: Message;
@@ -21,9 +23,16 @@ type MessageItem = {
     messageId: Message["messageId"],
     newText: Message["text"],
   ) => void;
+  onDeleteMessage: (messageId: Message["messageId"]) => void;
 };
 
-function MessageItem({ message, participant, onUpdateMessage }: MessageItem) {
+function MessageItem({
+  message,
+  participant,
+  onUpdateMessage,
+  onDeleteMessage,
+}: MessageItem) {
+  const { t } = useTranslation();
   const isUserOwnMessage = !participant;
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const [newText, setNewText] = useState<string>(message.text);
@@ -41,6 +50,10 @@ function MessageItem({ message, participant, onUpdateMessage }: MessageItem) {
       onUpdateMessage(message.messageId, newText);
     }
     handleToggleEdit();
+  };
+
+  const handleDelete = () => {
+    onDeleteMessage(message.messageId);
   };
 
   const messageMaxWidth = 700;
@@ -61,7 +74,9 @@ function MessageItem({ message, participant, onUpdateMessage }: MessageItem) {
           </Box>
         )}
         <Typography variant="caption" sx={{ gridColumnStart: 2 }}>
-          {formatRelative(message.lastModified, new Date())}
+          {t("chat.lastModified", {
+            date: formatRelative(message.lastModified, new Date()),
+          })}
         </Typography>
         {isEditable ? (
           <OutlinedInput
@@ -111,6 +126,9 @@ function MessageItem({ message, participant, onUpdateMessage }: MessageItem) {
           <Box sx={{ gridColumnStart: 3, gridRowStart: 2 }}>
             <IconButton color="primary" onClick={handleToggleEdit}>
               <EditIcon />
+            </IconButton>
+            <IconButton color="error" onClick={handleDelete}>
+              <DeleteOutlineIcon />
             </IconButton>
           </Box>
         )}
