@@ -8,6 +8,18 @@ import Search from "./Search";
 import RoomsList from "./RoomsList";
 import { ChatEvents } from "../../constants";
 import Messages from "./Messages";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAllRooms,
+  addRoom,
+  deleteRoom,
+  addRooms,
+  userJoined,
+  userLeft,
+  newMessage,
+  updateMessage,
+  deleteMessage,
+} from "../../store/roomsSlice";
 
 type ChatProps = {
   socket: Socket;
@@ -25,100 +37,48 @@ const initialResults: Results = {
   query: "",
 };
 
-const changeUserStatus = (
-  room: Room,
-  userId: Participant["userId"],
-  isOnline: boolean,
-) => {
-  return {
-    ...room,
-    participants: room.participants.map((participant) => {
-      return {
-        ...participant,
-        isOnline:
-          userId === participant.userId ? isOnline : participant.isOnline,
-      };
-    }),
-  };
-};
-
 function Chat({ socket }: ChatProps) {
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const dispatch = useDispatch();
+  const rooms = useSelector(selectAllRooms);
   const [selectedRoomId, setSelectedRoomId] = useState<Room["roomId"] | null>(
     null,
   );
   const [newRoom, setNewRoom] = useState<Room | null>(null);
 
   useEffect(() => {
-    socket.emit(ChatEvents.getUserRooms, setRooms);
+    socket.emit(ChatEvents.getUserRooms, (rooms: Room[]) => {
+      dispatch(addRooms(rooms));
+    });
   }, []);
 
   useEffect(() => {
     socket.on(ChatEvents.userJoin, (userId: Participant["userId"]) => {
-      setRooms((rooms) =>
-        rooms.map((room) => changeUserStatus(room, userId, true)),
-      );
+      dispatch(userJoined(userId));
     });
     socket.on(ChatEvents.userLeave, (userId: Participant["userId"]) => {
-      setRooms((rooms) =>
-        rooms.map((room) => changeUserStatus(room, userId, false)),
-      );
+      dispatch(userLeft(userId));
     });
     socket.on(ChatEvents.newRoom, (newRoom: Room) => {
-      setRooms((rooms) => [newRoom, ...rooms]);
+      dispatch(addRoom(newRoom));
     });
     socket.on(
       ChatEvents.message,
       (roomId: Room["roomId"], message: Message) => {
-        setRooms((rooms) =>
-          rooms.map((room) => {
-            if (room.roomId === roomId) {
-              return { ...room, messages: [...room.messages, message] };
-            }
-            return room;
-          }),
-        );
+        dispatch(newMessage({ roomId, message }));
       },
     );
 
     socket.on(
       ChatEvents.updateMessage,
       (roomId: Room["roomId"], updatedMessage: Omit<Message, "author">) => {
-        setRooms((rooms) =>
-          rooms.map((room) => {
-            if (room.roomId === roomId) {
-              return {
-                ...room,
-                messages: room.messages.map((message) => {
-                  if (message.messageId === updatedMessage.messageId) {
-                    return { ...message, ...updatedMessage };
-                  }
-                  return message;
-                }),
-              };
-            }
-            return room;
-          }),
-        );
+        dispatch(updateMessage({ roomId, updatedMessage }));
       },
     );
 
     socket.on(
       ChatEvents.deleteMessage,
       (roomId: Room["roomId"], messageId: Message["messageId"]) => {
-        setRooms((rooms) =>
-          rooms.map((room) => {
-            if (room.roomId === roomId) {
-              return {
-                ...room,
-                messages: room.messages.filter(
-                  (room) => room.messageId !== messageId,
-                ),
-              };
-            }
-            return room;
-          }),
-        );
+        dispatch(deleteMessage({ roomId, messageId }));
       },
     );
 
@@ -128,6 +88,7 @@ function Chat({ socket }: ChatProps) {
       socket.off(ChatEvents.newRoom);
       socket.off(ChatEvents.message);
       socket.off(ChatEvents.updateMessage);
+      socket.off(ChatEvents.deleteMessage);
     };
   }, []);
 
@@ -197,7 +158,7 @@ function Chat({ socket }: ChatProps) {
           participants: [...newRoom!.participants],
           messages: [],
         };
-        setRooms([createdRoom, ...rooms]);
+        dispatch(addRooms([createdRoom, ...rooms]));
         setNewRoom(null);
         setSelectedRoomId(createdRoom.roomId);
         callback(createdRoom.roomId);
@@ -207,21 +168,14 @@ function Chat({ socket }: ChatProps) {
 
   const handleDeleteRoom = (deletedRoomId: Room["roomId"]) => {
     socket.emit(ChatEvents.leaveRoom, deletedRoomId, () => {
-      setRooms(rooms.filter(({ roomId }) => roomId !== deletedRoomId));
+      dispatch(deleteRoom(deletedRoomId));
       setSelectedRoomId(null);
     });
   };
 
   const handleSendMessage = (roomId: Room["roomId"], text: string) => {
-    socket.emit("message", roomId, text, (newMessage: Message) => {
-      setRooms((rooms) =>
-        rooms.map((room) => {
-          if (room.roomId === roomId) {
-            return { ...room, messages: [...room.messages, newMessage] };
-          }
-          return room;
-        }),
-      );
+    socket.emit("message", roomId, text, (message: Message) => {
+      dispatch(newMessage({ roomId, message }));
     });
   };
 
@@ -235,22 +189,7 @@ function Chat({ socket }: ChatProps) {
       messageId,
       newText,
       (updatedMessage: Omit<Message, "author">) => {
-        setRooms((rooms) =>
-          rooms.map((room) => {
-            if (room.roomId === selectedRoomId) {
-              return {
-                ...room,
-                messages: room.messages.map((message) => {
-                  if (message.messageId === messageId) {
-                    return { ...message, ...updatedMessage };
-                  }
-                  return message;
-                }),
-              };
-            }
-            return room;
-          }),
-        );
+        dispatch(updateMessage({ roomId: selectedRoomId!, updatedMessage }));
       },
     );
   };
@@ -261,25 +200,12 @@ function Chat({ socket }: ChatProps) {
       selectedRoom?.roomId,
       messageId,
       () => {
-        setRooms((rooms) =>
-          rooms.map((room) => {
-            if (room.roomId === selectedRoom?.roomId) {
-              return {
-                ...room,
-                messages: room.messages.filter(
-                  (message) => message.messageId !== messageId,
-                ),
-              };
-            }
-            return room;
-          }),
-        );
+        dispatch(deleteMessage({ roomId: selectedRoomId!, messageId }));
       },
     );
   };
 
   const selectedRoom = rooms.find(({ roomId }) => roomId === selectedRoomId);
-  console.log("rooms", rooms);
 
   return (
     <Container>
