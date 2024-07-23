@@ -125,6 +125,7 @@ function Chat({ socket }: ChatProps) {
   };
 
   const handleClearSearchResults = () => setSearchResults(initialResults);
+
   const handleSelectParticipant = (participant: Participant) => {
     const existingRoom = rooms.find(
       ({ participants }) => participants[0].userId === participant.userId,
@@ -133,12 +134,20 @@ function Chat({ socket }: ChatProps) {
       setNewRoom(null);
       setSelectedRoomId(existingRoom.roomId);
     } else {
-      setNewRoom({
-        roomId: "newRoomId",
-        participants: [participant],
-        messages: [],
-      });
-      setSelectedRoomId(null);
+      socket.emit(
+        ChatEvents.findRoom,
+        participant.userId,
+        (foundRoom: Room | null) => {
+          setNewRoom(
+            foundRoom ?? {
+              roomId: "newRoomId",
+              participants: [participant],
+              messages: [],
+            },
+          );
+          setSelectedRoomId(null);
+        },
+      );
     }
     handleClearSearchResults();
   };
@@ -152,16 +161,11 @@ function Chat({ socket }: ChatProps) {
     socket.emit(
       ChatEvents.createRoom,
       newRoom?.participants[0].userId,
-      (newRoomId: string) => {
-        const createdRoom = {
-          roomId: newRoomId,
-          participants: [...newRoom!.participants],
-          messages: [],
-        };
-        dispatch(addRooms([createdRoom, ...rooms]));
+      (newRoom: Room) => {
+        dispatch(addRooms([newRoom, ...rooms]));
         setNewRoom(null);
-        setSelectedRoomId(createdRoom.roomId);
-        callback(createdRoom.roomId);
+        setSelectedRoomId(newRoom.roomId);
+        callback(newRoom.roomId);
       },
     );
   };
@@ -205,7 +209,8 @@ function Chat({ socket }: ChatProps) {
     );
   };
 
-  const selectedRoom = rooms.find(({ roomId }) => roomId === selectedRoomId);
+  const selectedRoom =
+    rooms.find(({ roomId }) => roomId === selectedRoomId) ?? null;
 
   return (
     <Container>
@@ -228,7 +233,8 @@ function Chat({ socket }: ChatProps) {
           />
         </Aside>
         <Messages
-          room={newRoom || selectedRoom}
+          newRoom={newRoom}
+          selectedRoom={selectedRoom}
           onCreateRoom={handleCreateRoom}
           onSendMessage={handleSendMessage}
           onUpdateMessage={handleUpdateMessage}

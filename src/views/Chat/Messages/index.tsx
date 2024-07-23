@@ -7,7 +7,8 @@ import Header from "./Header";
 import MessagesList from "./MessagesList";
 
 type MessagesProps = {
-  room?: Room | null;
+  newRoom: Room | null;
+  selectedRoom: Room | null;
   onCreateRoom: (callback: (createdRoom: Room["roomId"]) => void) => void;
   onSendMessage: (roomId: Room["roomId"], text: string) => void;
   onUpdateMessage: (
@@ -18,16 +19,18 @@ type MessagesProps = {
 };
 
 function Messages({
-  room,
+  newRoom,
+  selectedRoom,
   onCreateRoom,
   onSendMessage,
   onUpdateMessage,
   onDeleteMessage,
 }: MessagesProps) {
-  if (!room) {
+  if (!newRoom && !selectedRoom) {
     return null;
   }
 
+  const room = (newRoom ?? selectedRoom) as Room;
   const { messages } = room;
 
   const handleSendFirstMessage = (message: string) => {
@@ -40,8 +43,7 @@ function Messages({
     onSendMessage(room.roomId, message);
   };
 
-  const handleSend =
-    messages.length === 0 ? handleSendFirstMessage : handleSendMessage;
+  const handleSend = newRoom ? handleSendFirstMessage : handleSendMessage;
 
   return (
     <Grid

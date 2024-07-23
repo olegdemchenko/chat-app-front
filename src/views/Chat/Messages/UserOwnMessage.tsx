@@ -6,19 +6,16 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
-import { grey, lightBlue } from "@mui/material/colors";
 import { formatRelative } from "date-fns";
+import { lightBlue } from "@mui/material/colors";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Participant, Message } from "../../../types";
-import ContactAvatar from "../../../components/ContactAvatar";
-import { useTranslation } from "react-i18next";
+import { Message } from "../../../types";
 
-type MessageItem = {
+type UserOwnMessageProps = {
   message: Message;
-  participant?: Participant;
   onUpdateMessage: (
     messageId: Message["messageId"],
     newText: Message["text"],
@@ -26,14 +23,11 @@ type MessageItem = {
   onDeleteMessage: (messageId: Message["messageId"]) => void;
 };
 
-function MessageItem({
+function UserOwnMessage({
   message,
-  participant,
   onUpdateMessage,
   onDeleteMessage,
-}: MessageItem) {
-  const { t } = useTranslation();
-  const isUserOwnMessage = !participant;
+}: UserOwnMessageProps) {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const [newText, setNewText] = useState<string>(message.text);
 
@@ -55,11 +49,10 @@ function MessageItem({
   const handleDelete = () => {
     onDeleteMessage(message.messageId);
   };
-
   const messageMaxWidth = 700;
 
   return (
-    <Box display="flex" justifyContent={isUserOwnMessage ? "end" : "start"}>
+    <Box display="flex" justifyContent="end">
       <Box
         maxWidth={messageMaxWidth}
         sx={{
@@ -68,15 +61,8 @@ function MessageItem({
           gridTemplateColumns: "auto auto auto",
         }}
       >
-        {!isUserOwnMessage && (
-          <Box sx={{ gridRowStart: 2, gridColumnStart: 1, mr: 1 }}>
-            <ContactAvatar isOnline={participant.isOnline} />
-          </Box>
-        )}
         <Typography variant="caption" sx={{ gridColumnStart: 2 }}>
-          {t("chat.lastModified", {
-            date: formatRelative(message.lastModified, new Date()),
-          })}
+          {formatRelative(message.lastModified, new Date())}
         </Typography>
         {isEditable ? (
           <OutlinedInput
@@ -114,15 +100,13 @@ function MessageItem({
               paddingX: 2,
               paddingY: 1,
               borderRadius: 1,
-              backgroundColor: isUserOwnMessage
-                ? lightBlue["100"]
-                : grey["100"],
+              backgroundColor: lightBlue["100"],
             }}
           >
             {message.text}
           </Typography>
         )}
-        {isUserOwnMessage && !isEditable && (
+        {!isEditable && (
           <Box sx={{ gridColumnStart: 3, gridRowStart: 2 }}>
             <IconButton color="primary" onClick={handleToggleEdit}>
               <EditIcon />
@@ -137,4 +121,4 @@ function MessageItem({
   );
 }
 
-export default MessageItem;
+export default UserOwnMessage;

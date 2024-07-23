@@ -1,7 +1,9 @@
 import React from "react";
 import { Box } from "@mui/material";
 import { Message, Participant } from "../../../types";
-import MessageItem from "./MessageItem";
+import UserOwnMessage from "./UserOwnMessage";
+import ParticipantMessage from "./ParticipantMessage";
+import SystemMessage from "./SystemMessage";
 
 type MessagesListProps = {
   messages: Message[];
@@ -29,17 +31,23 @@ function MessagesList({
       paddingY={4}
       overflow="auto"
     >
-      {messages.map((message) => (
-        <MessageItem
-          key={message.messageId}
-          message={message}
-          participant={participants.find(
-            ({ userId }) => message.author === userId,
-          )}
-          onUpdateMessage={onUpdateMessage}
-          onDeleteMessage={onDeleteMessage}
-        />
-      ))}
+      {messages.map((message) => {
+        if (message.author === "system") {
+          return <SystemMessage message={message} />;
+        }
+        const author = participants.find(
+          ({ userId }) => message.author === userId,
+        );
+        return author ? (
+          <ParticipantMessage message={message} author={author} />
+        ) : (
+          <UserOwnMessage
+            message={message}
+            onUpdateMessage={onUpdateMessage}
+            onDeleteMessage={onDeleteMessage}
+          />
+        );
+      })}
     </Box>
   );
 }

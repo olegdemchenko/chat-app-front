@@ -10,7 +10,7 @@ import RoomItem from "./RoomItem";
 type RoomsListProps = {
   rooms: Room[];
   newRoom: Room | null;
-  selectedRoom?: Room;
+  selectedRoom: Room | null;
   onSelect: (roomId: Room["roomId"]) => void;
   onDelete: (roomId: Room["roomId"]) => void;
 };
