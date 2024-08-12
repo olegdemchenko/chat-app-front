@@ -158,16 +158,23 @@ function Chat({ socket }: ChatProps) {
   };
 
   const handleCreateRoom = (callback: (roomId: Room["roomId"]) => void) => {
-    socket.emit(
-      ChatEvents.createRoom,
-      newRoom?.participants[0].userId,
-      (newRoom: Room) => {
-        dispatch(addRooms([newRoom, ...rooms]));
-        setNewRoom(null);
-        setSelectedRoomId(newRoom.roomId);
-        callback(newRoom.roomId);
-      },
-    );
+    const updateRoomsState = (newRoom: Room) => {
+      dispatch(addRooms([newRoom, ...rooms]));
+      setNewRoom(null);
+      setSelectedRoomId(newRoom.roomId);
+      callback(newRoom.roomId);
+    };
+    newRoom!.messages.length > 0
+      ? socket.emit(ChatEvents.connectToRoom, newRoom?.roomId, () => {
+          updateRoomsState(newRoom as Room);
+        })
+      : socket.emit(
+          ChatEvents.createRoom,
+          newRoom?.participants[0].userId,
+          (createdRoom: Room) => {
+            updateRoomsState(createdRoom);
+          },
+        );
   };
 
   const handleDeleteRoom = (deletedRoomId: Room["roomId"]) => {

@@ -12,6 +12,7 @@ export enum ChatEvents {
   getUserRooms = "getUserRooms",
   findUsers = "findUsers",
   findRoom = "findRoom",
+  connectToRoom = "connectToRoom",
   createRoom = "createRoom",
   leaveRoom = "leaveRoom",
   newRoom = "newRoom",

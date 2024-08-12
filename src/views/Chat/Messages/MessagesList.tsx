@@ -33,15 +33,20 @@ function MessagesList({
     >
       {messages.map((message) => {
         if (message.author === "system") {
-          return <SystemMessage message={message} />;
+          return <SystemMessage message={message} key={message.messageId} />;
         }
         const author = participants.find(
           ({ userId }) => message.author === userId,
         );
         return author ? (
-          <ParticipantMessage message={message} author={author} />
+          <ParticipantMessage
+            message={message}
+            author={author}
+            key={message.messageId}
+          />
         ) : (
           <UserOwnMessage
+            key={message.messageId}
             message={message}
             onUpdateMessage={onUpdateMessage}
             onDeleteMessage={onDeleteMessage}
