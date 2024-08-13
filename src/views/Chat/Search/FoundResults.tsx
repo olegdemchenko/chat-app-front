@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
-import { ListItem, Typography, ListItemAvatar } from "@mui/material";
+import { ListItem, Typography, ListItemAvatar, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Participant } from "../../../types";
 import ContactAvatar from "../../../components/ContactAvatar";
+import ScrollableList from "../../../components/ScrollableList";
 import { Results } from "..";
 
 type FoundResultsProps = {
@@ -20,29 +21,11 @@ function FoundResults({
   onSelect,
 }: FoundResultsProps) {
   const { t } = useTranslation();
-  const listRef = useRef<HTMLUListElement | null>(null);
   const [page, setPage] = useState<number>(1);
-  const loadingRef = useRef<boolean>(false);
 
   useEffect(() => {
     setPage(1);
-    if (listRef.current) {
-      listRef.current.scrollTop = 0;
-    }
   }, [query]);
-
-  const handleScroll = (e: React.UIEvent<HTMLUListElement, UIEvent>) => {
-    const hasScrollReachedBottom =
-      e.currentTarget.clientHeight + e.currentTarget.scrollTop >
-      e.currentTarget.scrollHeight - 20;
-    if (hasScrollReachedBottom && !loadingRef.current && users.length < count) {
-      loadingRef.current = true;
-      onLoadMore(page, () => {
-        loadingRef.current = false;
-        setPage((prevPage) => prevPage + 1);
-      });
-    }
-  };
 
   if (query.length === 0) {
     return null;
@@ -64,30 +47,38 @@ function FoundResults({
           {t("chat.searchResults")}
         </ListSubheader>
       }
-      onScroll={handleScroll}
-      sx={{ maxHeight: 200, overflow: "auto" }}
-      ref={listRef}
     >
       {users.length > 0 ? (
-        users.map(({ userId, name, isOnline }) => (
-          <ListItem
-            key={userId}
-            sx={{
-              paddingX: 5,
-              "&.selected, &:hover": {
-                backgroundColor: "primary.light",
-              },
-            }}
-            onClick={() => {
-              onSelect({ userId, name, isOnline });
-            }}
-          >
-            <ListItemAvatar>
-              <ContactAvatar isOnline={isOnline} />
-            </ListItemAvatar>
-            <ListItemText primary={name} sx={{ color: "white" }} />
-          </ListItem>
-        ))
+        <Box component="div" sx={{ height: 160 }}>
+          <ScrollableList
+            direction="bottom"
+            elements={users.map(({ userId, name, isOnline }) => (
+              <ListItem
+                key={userId}
+                sx={{
+                  paddingX: 5,
+                  "&.selected, &:hover": {
+                    backgroundColor: "primary.light",
+                  },
+                }}
+                onClick={() => {
+                  onSelect({ userId, name, isOnline });
+                }}
+              >
+                <ListItemAvatar>
+                  <ContactAvatar isOnline={isOnline} />
+                </ListItemAvatar>
+                <ListItemText primary={name} sx={{ color: "white" }} />
+              </ListItem>
+            ))}
+            onReachEnd={() =>
+              onLoadMore(page, () => {
+                setPage((prevPage) => prevPage + 1);
+              })
+            }
+            isListExausted={users.length === count}
+          />
+        </Box>
       ) : (
         <Typography variant="body2" sx={{ paddingX: 5, color: "white" }}>
           {t("chat.noUsersFound", {
