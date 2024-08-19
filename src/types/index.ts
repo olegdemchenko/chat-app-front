@@ -19,11 +19,13 @@ export type Message = {
   messageId: string;
   author: string;
   text: string;
-  lastModified: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Room = {
   roomId: string;
   participants: Participant[];
   messages: Message[];
+  messagesCount: number;
 };

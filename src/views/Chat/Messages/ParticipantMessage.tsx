@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { formatRelative } from "date-fns";
+import { formatRelative, max } from "date-fns";
 import { Message, Participant } from "../../../types";
 import ContactAvatar from "../../../components/ContactAvatar";
 
@@ -13,7 +13,7 @@ type ParticipantMessageProps = {
 function ParticipantMessage({ message, author }: ParticipantMessageProps) {
   const messageMaxWidth = 700;
   return (
-    <Box display="flex" justifyContent="start">
+    <Box display="flex" justifyContent="start" py={1}>
       <Box
         maxWidth={messageMaxWidth}
         sx={{
@@ -26,7 +26,10 @@ function ParticipantMessage({ message, author }: ParticipantMessageProps) {
           <ContactAvatar isOnline={author!.isOnline} />
         </Box>
         <Typography variant="caption" sx={{ gridColumnStart: 2 }}>
-          {formatRelative(message.lastModified, new Date())}
+          {formatRelative(
+            max([message.createdAt, message.updatedAt]),
+            new Date(),
+          )}
         </Typography>
         <Typography
           variant="body1"

@@ -19,6 +19,7 @@ import {
   newMessage,
   updateMessage,
   deleteMessage,
+  saveExtraMessages,
 } from "../../store/roomsSlice";
 
 type ChatProps = {
@@ -138,13 +139,15 @@ function Chat({ socket }: ChatProps) {
         ChatEvents.findRoom,
         participant.userId,
         (foundRoom: Room | null) => {
-          setNewRoom(
-            foundRoom ?? {
-              roomId: "newRoomId",
-              participants: [participant],
-              messages: [],
-            },
-          );
+          const room = foundRoom
+            ? { ...foundRoom, messages: foundRoom.messages.reverse() }
+            : {
+                roomId: "newRoomId",
+                participants: [participant],
+                messages: [],
+                messagesCount: 0,
+              };
+          setNewRoom(room);
           setSelectedRoomId(null);
         },
       );
@@ -159,7 +162,7 @@ function Chat({ socket }: ChatProps) {
 
   const handleCreateRoom = (callback: (roomId: Room["roomId"]) => void) => {
     const updateRoomsState = (newRoom: Room) => {
-      dispatch(addRooms([newRoom, ...rooms]));
+      dispatch(addRoom(newRoom));
       setNewRoom(null);
       setSelectedRoomId(newRoom.roomId);
       callback(newRoom.roomId);
@@ -184,8 +187,19 @@ function Chat({ socket }: ChatProps) {
     });
   };
 
+  const handleLoadMoreMessages = (roomId: Room["roomId"], page: number) => {
+    socket.emit(
+      ChatEvents.loadMoreMessages,
+      roomId,
+      page,
+      (messages: Message[]) => {
+        dispatch(saveExtraMessages({ roomId, messages }));
+      },
+    );
+  };
+
   const handleSendMessage = (roomId: Room["roomId"], text: string) => {
-    socket.emit("message", roomId, text, (message: Message) => {
+    socket.emit(ChatEvents.message, roomId, text, (message: Message) => {
       dispatch(newMessage({ roomId, message }));
     });
   };
@@ -243,6 +257,7 @@ function Chat({ socket }: ChatProps) {
           newRoom={newRoom}
           selectedRoom={selectedRoom}
           onCreateRoom={handleCreateRoom}
+          onLoadMoreMessages={handleLoadMoreMessages}
           onSendMessage={handleSendMessage}
           onUpdateMessage={handleUpdateMessage}
           onDeleteMessage={handleDeleteMessage}

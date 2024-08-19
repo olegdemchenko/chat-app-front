@@ -6,7 +6,7 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
-import { formatRelative } from "date-fns";
+import { formatRelative, max } from "date-fns";
 import { lightBlue } from "@mui/material/colors";
 import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
@@ -52,7 +52,7 @@ function UserOwnMessage({
   const messageMaxWidth = 700;
 
   return (
-    <Box display="flex" justifyContent="end">
+    <Box display="flex" justifyContent="end" py={1}>
       <Box
         maxWidth={messageMaxWidth}
         sx={{
@@ -62,7 +62,10 @@ function UserOwnMessage({
         }}
       >
         <Typography variant="caption" sx={{ gridColumnStart: 2 }}>
-          {formatRelative(message.lastModified, new Date())}
+          {formatRelative(
+            max([message.createdAt, message.updatedAt]),
+            new Date(),
+          )}
         </Typography>
         {isEditable ? (
           <OutlinedInput

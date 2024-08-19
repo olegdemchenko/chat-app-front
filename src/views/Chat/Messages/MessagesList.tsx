@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box } from "@mui/material";
-import { Message, Participant } from "../../../types";
+import { Message, Room } from "../../../types";
 import UserOwnMessage from "./UserOwnMessage";
 import ParticipantMessage from "./ParticipantMessage";
 import SystemMessage from "./SystemMessage";
+import ScrollableList from "../../../components/ScrollableList";
 
 type MessagesListProps = {
-  messages: Message[];
-  participants: Participant[];
+  room: Room;
+  isNewRoom: boolean;
+  onLoadMoreMessages: (roomId: Room["roomId"], page: number) => void;
   onUpdateMessage: (
     messageId: Message["messageId"],
     newText: Message["text"],
@@ -16,11 +18,20 @@ type MessagesListProps = {
 };
 
 function MessagesList({
-  messages,
-  participants,
+  room,
+  isNewRoom,
+  onLoadMoreMessages,
   onUpdateMessage,
   onDeleteMessage,
 }: MessagesListProps) {
+  const { messages, participants, messagesCount } = room;
+  const [page, setPage] = useState<number>(1);
+
+  const handleLoadMoreMessages = () => {
+    setPage(page + 1);
+    onLoadMoreMessages(room.roomId, page + 1);
+  };
+
   return (
     <Box
       display="flex"
@@ -31,28 +42,33 @@ function MessagesList({
       paddingY={4}
       overflow="auto"
     >
-      {messages.map((message) => {
-        if (message.author === "system") {
-          return <SystemMessage message={message} key={message.messageId} />;
-        }
-        const author = participants.find(
-          ({ userId }) => message.author === userId,
-        );
-        return author ? (
-          <ParticipantMessage
-            message={message}
-            author={author}
-            key={message.messageId}
-          />
-        ) : (
-          <UserOwnMessage
-            key={message.messageId}
-            message={message}
-            onUpdateMessage={onUpdateMessage}
-            onDeleteMessage={onDeleteMessage}
-          />
-        );
-      })}
+      <ScrollableList
+        direction="top"
+        elements={messages.map((message) => {
+          if (message.author === "system") {
+            return <SystemMessage message={message} key={message.messageId} />;
+          }
+          const author = participants.find(
+            ({ userId }) => message.author === userId,
+          );
+          return author ? (
+            <ParticipantMessage
+              message={message}
+              author={author}
+              key={message.messageId}
+            />
+          ) : (
+            <UserOwnMessage
+              key={message.messageId}
+              message={message}
+              onUpdateMessage={onUpdateMessage}
+              onDeleteMessage={onDeleteMessage}
+            />
+          );
+        })}
+        isListExausted={isNewRoom || messagesCount === messages.length}
+        onReachEnd={handleLoadMoreMessages}
+      />
     </Box>
   );
 }

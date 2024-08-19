@@ -8,9 +8,9 @@ type SystemMessageProps = {
 
 function SystemMessage({ message }: SystemMessageProps) {
   return (
-    <Box display="flex" flexDirection="column" alignItems="center">
+    <Box display="flex" flexDirection="column" alignItems="center" py={2}>
       <Typography variant="caption" sx={{ gridColumnStart: 2 }}>
-        {formatRelative(message.lastModified, new Date())}
+        {formatRelative(message.createdAt, new Date())}
       </Typography>
       <Typography variant="body2">{message.text}</Typography>
     </Box>

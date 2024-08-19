@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 
 type ScrollableListProps = {
@@ -15,6 +15,7 @@ function ScrollableList({
   onReachEnd,
 }: ScrollableListProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [scrolledPartHeight, setScrolledPartHeight] = useState<number>(0);
 
   useEffect(() => {
     if (containerRef.current && direction === "top") {
@@ -38,6 +39,7 @@ function ScrollableList({
         }
         isLoading = true;
         onReachEnd();
+        setScrolledPartHeight(container.scrollHeight);
       };
 
       containerRef.current.addEventListener("scroll", onScroll);
@@ -49,6 +51,13 @@ function ScrollableList({
       };
     }
   }, [elements, isListExausted]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container && direction === "top") {
+      container.scrollTo(0, container.scrollHeight - scrolledPartHeight);
+    }
+  }, [elements]);
 
   return (
     <Box

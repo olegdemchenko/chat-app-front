@@ -34,6 +34,7 @@
     "startNewConversation": "You're starting a new conversation",
     "typeMessage": "Type your first message below.",
     "inputPlaceholder": "Type a message",
-    "lastModified": "Last modified: {{ date }}"
+    "lastModified": "Last modified: {{ date }}",
+    "joinBackChat": "Wanna join chat again? Just type a new message!"
   }
 }

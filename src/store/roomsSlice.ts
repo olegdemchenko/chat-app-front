@@ -14,7 +14,13 @@ const roomsSlice = createSlice({
   name: "rooms",
   initialState: roomsAdapter.getInitialState(),
   reducers: {
-    addRooms: roomsAdapter.addMany,
+    addRooms: (state, action: PayloadAction<Room[]>) => {
+      const modifiedRooms = action.payload.map((room) => ({
+        ...room,
+        messages: room.messages.reverse(),
+      }));
+      roomsAdapter.addMany(state, modifiedRooms);
+    },
     addRoom: roomsAdapter.addOne,
     deleteRoom: roomsAdapter.removeOne,
     userJoined: (state, action: PayloadAction<Participant["userId"]>) => {
@@ -35,12 +41,20 @@ const roomsSlice = createSlice({
         });
       });
     },
+    saveExtraMessages: (
+      state,
+      action: PayloadAction<{ roomId: Room["roomId"]; messages: Message[] }>,
+    ) => {
+      const { roomId, messages } = action.payload;
+      state.entities[roomId].messages.unshift(...messages.reverse());
+    },
     newMessage: (
       state,
       action: PayloadAction<{ roomId: Room["roomId"]; message: Message }>,
     ) => {
       const { roomId, message } = action.payload;
       state.entities[roomId].messages.push(message);
+      state.entities[roomId].messagesCount += 1;
     },
     updateMessage: (
       state,
@@ -70,6 +84,7 @@ const roomsSlice = createSlice({
         (message) => message.messageId !== messageId,
       );
       state.entities[roomId].messages = filteredMessages;
+      state.entities[roomId].messagesCount -= 1;
     },
   },
 });
@@ -82,6 +97,7 @@ export const {
   addRooms,
   userJoined,
   userLeft,
+  saveExtraMessages,
   newMessage,
   updateMessage,
   deleteMessage,
