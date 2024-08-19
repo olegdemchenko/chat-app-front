@@ -60,17 +60,14 @@ const roomsSlice = createSlice({
       state,
       action: PayloadAction<{
         roomId: Room["roomId"];
-        updatedMessage: Omit<Message, "author">;
+        updatedMessage: Message;
       }>,
     ) => {
       const { roomId, updatedMessage } = action.payload;
-      const updatedMessages = state.entities[roomId].messages.map((message) => {
-        if (message.messageId === updatedMessage.messageId) {
-          return { ...message, ...updatedMessage };
-        }
-        return message;
-      });
-      state.entities[roomId].messages = updatedMessages;
+      const updatedMessageIndex = state.entities[roomId].messages.findIndex(
+        (message) => message.messageId === updatedMessage.messageId,
+      );
+      state.entities[roomId].messages[updatedMessageIndex] = updatedMessage;
     },
     deleteMessage: (
       state,

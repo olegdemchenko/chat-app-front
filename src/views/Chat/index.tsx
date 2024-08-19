@@ -71,7 +71,7 @@ function Chat({ socket }: ChatProps) {
 
     socket.on(
       ChatEvents.updateMessage,
-      (roomId: Room["roomId"], updatedMessage: Omit<Message, "author">) => {
+      (roomId: Room["roomId"], updatedMessage: Message) => {
         dispatch(updateMessage({ roomId, updatedMessage }));
       },
     );
@@ -213,7 +213,7 @@ function Chat({ socket }: ChatProps) {
       selectedRoomId,
       messageId,
       newText,
-      (updatedMessage: Omit<Message, "author">) => {
+      (updatedMessage: Message) => {
         dispatch(updateMessage({ roomId: selectedRoomId!, updatedMessage }));
       },
     );
