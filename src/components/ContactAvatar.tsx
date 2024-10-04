@@ -1,39 +1,20 @@
 import React from "react";
-import { Avatar } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import { Avatar, Badge } from "@mui/material";
 
 type ContactAvatarProps = {
   isOnline: boolean;
 };
 
-const statusIconStyles = {
-  position: "absolute",
-  bottom: "-5px",
-  right: "-5px",
-  backgroundColor: "white",
-  clipPath: "circle(35% at 50% 50%)",
-};
-
 function ContactAvatar({ isOnline }: ContactAvatarProps) {
   return (
-    <Avatar sx={{ overflow: "visible" }}>
-      <AccountCircleIcon />
-      {isOnline ? (
-        <CheckCircleIcon
-          sx={statusIconStyles}
-          fontSize="small"
-          color="success"
-        />
-      ) : (
-        <RemoveCircleIcon
-          sx={statusIconStyles}
-          fontSize="small"
-          color="error"
-        />
-      )}
-    </Avatar>
+    <Badge
+      badgeContent
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      overlap="circular"
+      color={isOnline ? "success" : "error"}
+    >
+      <Avatar />
+    </Badge>
   );
 }
 
