@@ -48,13 +48,37 @@ const roomsSlice = createSlice({
       const { roomId, messages } = action.payload;
       state.entities[roomId].messages.unshift(...messages.reverse());
     },
+    markMessagesAsRead: (
+      state,
+      action: PayloadAction<{
+        roomId: string;
+        userId: string;
+        messagesIds: Message["messageId"][];
+      }>,
+    ) => {
+      const { roomId, userId, messagesIds } = action.payload;
+      state.entities[roomId].messages = state.entities[roomId].messages.map(
+        (message) =>
+          messagesIds.includes(userId)
+            ? message
+            : { ...message, readBy: [...message.readBy, userId] },
+      );
+      state.entities[roomId].unreadMessagesCount -= messagesIds.length;
+    },
     newMessage: (
       state,
-      action: PayloadAction<{ roomId: Room["roomId"]; message: Message }>,
+      action: PayloadAction<{
+        roomId: Room["roomId"];
+        message: Message;
+        unread: boolean;
+      }>,
     ) => {
-      const { roomId, message } = action.payload;
+      const { roomId, message, unread } = action.payload;
       state.entities[roomId].messages.push(message);
       state.entities[roomId].messagesCount += 1;
+      if (unread) {
+        state.entities[roomId].unreadMessagesCount += 1;
+      }
     },
     updateMessage: (
       state,
@@ -95,6 +119,7 @@ export const {
   userJoined,
   userLeft,
   saveExtraMessages,
+  markMessagesAsRead,
   newMessage,
   updateMessage,
   deleteMessage,

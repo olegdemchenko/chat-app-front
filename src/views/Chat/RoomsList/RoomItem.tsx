@@ -1,16 +1,17 @@
 import React from "react";
 import ListItemText from "@mui/material/ListItemText";
-import { ListItem } from "@mui/material";
+import { ListItem, Badge } from "@mui/material";
 import cn from "classnames";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import IconButton from "@mui/material/IconButton";
-import ContactAvatar from "../../../components/ContactAvatar";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ContactAvatar from "../../../components/ContactAvatar";
 
 type RoomItemProps = {
   selected: boolean;
   name: string;
   isOnline: boolean;
+  unreadMessagesCount?: number;
   deletable?: boolean;
   onSelect?: () => void;
   onDelete?: () => void;
@@ -20,6 +21,7 @@ function RoomItem({
   selected,
   name,
   isOnline,
+  unreadMessagesCount = 0,
   deletable = false,
   onSelect,
   onDelete,
@@ -43,7 +45,13 @@ function RoomItem({
       }
     >
       <ListItemAvatar>
-        <ContactAvatar isOnline={isOnline} />
+        <Badge
+          badgeContent={unreadMessagesCount}
+          color="success"
+          invisible={unreadMessagesCount === 0}
+        >
+          <ContactAvatar isOnline={isOnline} />
+        </Badge>
       </ListItemAvatar>
       <ListItemText primary={name} sx={{ color: "white" }} />
     </ListItem>

@@ -20,6 +20,10 @@ export enum ChatEvents {
   loadMoreMessages = "loadMoreMessages",
   updateMessage = "updateMessage",
   deleteMessage = "deleteMessage",
+  readMessages = "readMessages",
   userJoin = "userJoin",
   userLeave = "userLeave",
+  getUserId = "getUserId",
 }
+
+export const MESSAGES_PER_PAGE = 15;

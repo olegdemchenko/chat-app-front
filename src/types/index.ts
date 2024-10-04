@@ -21,6 +21,7 @@ export type Message = {
   text: string;
   createdAt: string;
   updatedAt: string;
+  readBy: string[];
 };
 
 export type Room = {
@@ -28,4 +29,5 @@ export type Room = {
   participants: Participant[];
   messages: Message[];
   messagesCount: number;
+  unreadMessagesCount: number;
 };

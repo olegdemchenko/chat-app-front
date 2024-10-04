@@ -6,7 +6,7 @@ import Label from "./Label";
 import { Message, Participant, Room } from "../../types";
 import Search from "./Search";
 import RoomsList from "./RoomsList";
-import { ChatEvents } from "../../constants";
+import { ChatEvents, MESSAGES_PER_PAGE } from "../../constants";
 import Messages from "./Messages";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,7 +20,9 @@ import {
   updateMessage,
   deleteMessage,
   saveExtraMessages,
+  markMessagesAsRead,
 } from "../../store/roomsSlice";
+import { saveUserId, selectCurrentUserId } from "../../store/userSlice";
 
 type ChatProps = {
   socket: Socket;
@@ -38,17 +40,32 @@ const initialResults: Results = {
   query: "",
 };
 
+const getUnreadMessagesIds = (messages: Message[], userId: string) => {
+  return messages.reduce(
+    (acc, message) =>
+      message.readBy.includes(userId) ? acc : [...acc, message.messageId],
+    [] as string[],
+  );
+};
+
 function Chat({ socket }: ChatProps) {
   const dispatch = useDispatch();
   const rooms = useSelector(selectAllRooms);
+  const userId = useSelector(selectCurrentUserId) as string;
   const [selectedRoomId, setSelectedRoomId] = useState<Room["roomId"] | null>(
     null,
   );
   const [newRoom, setNewRoom] = useState<Room | null>(null);
 
+  const selectedRoom =
+    rooms.find(({ roomId }) => roomId === selectedRoomId) ?? null;
+
   useEffect(() => {
     socket.emit(ChatEvents.getUserRooms, (rooms: Room[]) => {
       dispatch(addRooms(rooms));
+    });
+    socket.emit(ChatEvents.getUserId, (userId: string) => {
+      dispatch(saveUserId(userId));
     });
   }, []);
 
@@ -62,12 +79,6 @@ function Chat({ socket }: ChatProps) {
     socket.on(ChatEvents.newRoom, (newRoom: Room) => {
       dispatch(addRoom(newRoom));
     });
-    socket.on(
-      ChatEvents.message,
-      (roomId: Room["roomId"], message: Message) => {
-        dispatch(newMessage({ roomId, message }));
-      },
-    );
 
     socket.on(
       ChatEvents.updateMessage,
@@ -87,11 +98,44 @@ function Chat({ socket }: ChatProps) {
       socket.off(ChatEvents.userJoin);
       socket.off(ChatEvents.userLeave);
       socket.off(ChatEvents.newRoom);
-      socket.off(ChatEvents.message);
       socket.off(ChatEvents.updateMessage);
       socket.off(ChatEvents.deleteMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (!selectedRoom || !selectedRoomId) {
+      return;
+    }
+    const unreadMessagesIds = getUnreadMessagesIds(
+      selectedRoom.messages.slice(-MESSAGES_PER_PAGE),
+      userId,
+    );
+    if (unreadMessagesIds.length > 0) {
+      socket.emit(ChatEvents.readMessages, unreadMessagesIds);
+      dispatch(
+        markMessagesAsRead({
+          messagesIds: unreadMessagesIds,
+          roomId: selectedRoomId,
+          userId,
+        }),
+      );
+    }
+  }, [selectedRoomId]);
+
+  useEffect(() => {
+    socket.on(
+      ChatEvents.message,
+      (roomId: Room["roomId"], message: Message) => {
+        dispatch(
+          newMessage({ roomId, message, unread: selectedRoomId !== roomId }),
+        );
+      },
+    );
+    return () => {
+      socket.off(ChatEvents.message);
+    };
+  }, [selectedRoomId]);
 
   const [searchResults, setSearchResults] = useState<Results>(initialResults);
 
@@ -146,6 +190,7 @@ function Chat({ socket }: ChatProps) {
                 participants: [participant],
                 messages: [],
                 messagesCount: 0,
+                unreadMessagesCount: 0,
               };
           setNewRoom(room);
           setSelectedRoomId(null);
@@ -194,13 +239,24 @@ function Chat({ socket }: ChatProps) {
       page,
       (messages: Message[]) => {
         dispatch(saveExtraMessages({ roomId, messages }));
+        const unreadMessagesIds = getUnreadMessagesIds(messages, userId);
+        if (unreadMessagesIds.length > 0) {
+          socket.emit(ChatEvents.readMessages, unreadMessagesIds);
+          dispatch(
+            markMessagesAsRead({
+              messagesIds: unreadMessagesIds,
+              userId,
+              roomId,
+            }),
+          );
+        }
       },
     );
   };
 
   const handleSendMessage = (roomId: Room["roomId"], text: string) => {
     socket.emit(ChatEvents.message, roomId, text, (message: Message) => {
-      dispatch(newMessage({ roomId, message }));
+      dispatch(newMessage({ roomId, message, unread: false }));
     });
   };
 
@@ -229,9 +285,6 @@ function Chat({ socket }: ChatProps) {
       },
     );
   };
-
-  const selectedRoom =
-    rooms.find(({ roomId }) => roomId === selectedRoomId) ?? null;
 
   return (
     <Container>

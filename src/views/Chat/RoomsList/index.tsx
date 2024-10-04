@@ -56,6 +56,7 @@ function RoomsList({
                 name={room.participants[0].name}
                 selected={selectedRoom?.roomId === room.roomId}
                 isOnline={room.participants[0].isOnline}
+                unreadMessagesCount={room.unreadMessagesCount}
                 deletable
                 onSelect={() => onSelect(room.roomId)}
                 onDelete={() => {
