@@ -232,11 +232,11 @@ function Chat({ socket }: ChatProps) {
     });
   };
 
-  const handleLoadMoreMessages = (roomId: Room["roomId"], page: number) => {
+  const handleLoadMoreMessages = (roomId: Room["roomId"], skip: number) => {
     socket.emit(
       ChatEvents.loadMoreMessages,
       roomId,
-      page,
+      skip,
       (messages: Message[]) => {
         dispatch(saveExtraMessages({ roomId, messages }));
         const unreadMessagesIds = getUnreadMessagesIds(messages, userId);

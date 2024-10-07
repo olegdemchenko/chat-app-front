@@ -25,11 +25,9 @@ function MessagesList({
   onDeleteMessage,
 }: MessagesListProps) {
   const { messages, participants, messagesCount } = room;
-  const [page, setPage] = useState<number>(1);
 
   const handleLoadMoreMessages = () => {
-    setPage(page + 1);
-    onLoadMoreMessages(room.roomId, page + 1);
+    onLoadMoreMessages(room.roomId, messages.length);
   };
 
   return (
