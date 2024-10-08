@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box } from "@mui/material";
 import { Message, Room } from "../../../types";
 import UserOwnMessage from "./UserOwnMessage";

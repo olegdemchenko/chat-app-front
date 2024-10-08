@@ -130,6 +130,9 @@ function Chat({ socket }: ChatProps) {
         dispatch(
           newMessage({ roomId, message, unread: selectedRoomId !== roomId }),
         );
+        if (roomId === selectedRoomId) {
+          socket.emit(ChatEvents.readMessages, [message.messageId]);
+        }
       },
     );
     return () => {
