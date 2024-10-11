@@ -19,6 +19,9 @@ function Aside({ children }: AsideProps) {
       <Box
         component="aside"
         sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
           height: "100%",
           bgcolor: "primary.main",
         }}

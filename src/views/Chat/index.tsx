@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Socket } from "socket.io-client";
+import { useDispatch, useSelector } from "react-redux";
+import { Box } from "@mui/material";
 import Container from "./Container";
 import Aside from "./Aside";
 import Label from "./Label";
@@ -8,7 +10,8 @@ import Search from "./Search";
 import RoomsList from "./RoomsList";
 import { ChatEvents, MESSAGES_PER_PAGE } from "../../constants";
 import Messages from "./Messages";
-import { useDispatch, useSelector } from "react-redux";
+import Logout from "./Logout";
+
 import {
   selectAllRooms,
   addRoom,
@@ -293,21 +296,24 @@ function Chat({ socket }: ChatProps) {
     <Container>
       <>
         <Aside>
-          <Label />
-          <Search
-            results={searchResults}
-            onSubmit={handleEnterQuery}
-            onLoadMore={handleLoadMoreResults}
-            onClear={handleClearSearchResults}
-            onSelect={handleSelectParticipant}
-          />
-          <RoomsList
-            rooms={rooms}
-            newRoom={newRoom}
-            selectedRoom={selectedRoom}
-            onSelect={handleSelectRoom}
-            onDelete={handleDeleteRoom}
-          />
+          <Box>
+            <Label />
+            <Search
+              results={searchResults}
+              onSubmit={handleEnterQuery}
+              onLoadMore={handleLoadMoreResults}
+              onClear={handleClearSearchResults}
+              onSelect={handleSelectParticipant}
+            />
+            <RoomsList
+              rooms={rooms}
+              newRoom={newRoom}
+              selectedRoom={selectedRoom}
+              onSelect={handleSelectRoom}
+              onDelete={handleDeleteRoom}
+            />
+          </Box>
+          <Logout />
         </Aside>
         <Messages
           newRoom={newRoom}

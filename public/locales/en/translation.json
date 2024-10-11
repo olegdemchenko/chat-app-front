@@ -35,6 +35,7 @@
     "typeMessage": "Type your first message below.",
     "inputPlaceholder": "Type a message",
     "lastModified": "Last modified: {{ date }}",
-    "joinBackChat": "Wanna join chat again? Just type a new message!"
+    "joinBackChat": "Wanna join chat again? Just type a new message!",
+    "logout": "Log out"
   }
 }
