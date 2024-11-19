@@ -5,6 +5,7 @@ type ScrollableListProps = {
   direction: "top" | "bottom";
   elements: Array<React.JSX.Element>;
   isListExausted: boolean;
+  maxHeight?: string;
   onReachEnd: () => void;
 };
 
@@ -12,6 +13,7 @@ function ScrollableList({
   elements,
   direction,
   isListExausted,
+  maxHeight = "auto",
   onReachEnd,
 }: ScrollableListProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -63,7 +65,7 @@ function ScrollableList({
     <Box
       component="div"
       ref={containerRef}
-      sx={{ height: "100%", overflowY: "auto" }}
+      sx={{ overflowY: "auto", maxHeight }}
     >
       {elements}
     </Box>

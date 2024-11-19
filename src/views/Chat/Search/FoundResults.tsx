@@ -49,36 +49,35 @@ function FoundResults({
       }
     >
       {users.length > 0 ? (
-        <Box component="div" sx={{ height: 160 }}>
-          <ScrollableList
-            direction="bottom"
-            elements={users.map(({ userId, name, isOnline }) => (
-              <ListItem
-                key={userId}
-                sx={{
-                  paddingX: 5,
-                  "&.selected, &:hover": {
-                    backgroundColor: "primary.light",
-                  },
-                }}
-                onClick={() => {
-                  onSelect({ userId, name, isOnline });
-                }}
-              >
-                <ListItemAvatar>
-                  <ContactAvatar isOnline={isOnline} />
-                </ListItemAvatar>
-                <ListItemText primary={name} sx={{ color: "white" }} />
-              </ListItem>
-            ))}
-            onReachEnd={() =>
-              onLoadMore(page, () => {
-                setPage((prevPage) => prevPage + 1);
-              })
-            }
-            isListExausted={users.length === count}
-          />
-        </Box>
+        <ScrollableList
+          direction="bottom"
+          elements={users.map(({ userId, name, isOnline }) => (
+            <ListItem
+              key={userId}
+              sx={{
+                paddingX: 5,
+                "&.selected, &:hover": {
+                  backgroundColor: "primary.light",
+                },
+              }}
+              onClick={() => {
+                onSelect({ userId, name, isOnline });
+              }}
+            >
+              <ListItemAvatar>
+                <ContactAvatar isOnline={isOnline} />
+              </ListItemAvatar>
+              <ListItemText primary={name} sx={{ color: "white" }} />
+            </ListItem>
+          ))}
+          onReachEnd={() =>
+            onLoadMore(page, () => {
+              setPage((prevPage) => prevPage + 1);
+            })
+          }
+          isListExausted={users.length === count}
+          maxHeight="180px"
+        />
       ) : (
         <Typography variant="body2" sx={{ paddingX: 5, color: "white" }}>
           {t("chat.noUsersFound", {
