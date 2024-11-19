@@ -47,7 +47,8 @@ export default function Login() {
         onSubmit={login}
       />
       <PageLink href={`/${routes.signup}`} text={t("auth.signupLink")} />
-      <SocialMediaLinks />
+      {/* TODO finish auth via social networks */}
+      {/* <SocialMediaLinks /> */}
       <Copyright />
       <Backdrop isOpen={isLoading} />
     </CenteringContainer>
