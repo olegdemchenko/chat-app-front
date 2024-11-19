@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
+import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Room } from "../../../types";
@@ -49,7 +50,7 @@ function RoomsList({
           />
         )}
         {rooms.length > 0 ? (
-          <>
+          <Box maxHeight={150} overflow="auto">
             {rooms.map((room) => (
               <RoomItem
                 key={room.roomId}
@@ -65,7 +66,7 @@ function RoomsList({
                 }}
               />
             ))}
-          </>
+          </Box>
         ) : (
           !newRoom && (
             <Typography variant="body2" sx={{ paddingX: 5, color: "white" }}>
