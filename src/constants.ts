@@ -9,6 +9,7 @@ export const routes = {
 export enum ChatEvents {
   connect = "connect",
   connectError = "connect_error",
+  customError = "customError",
   getUserRooms = "getUserRooms",
   findUsers = "findUsers",
   findRoom = "findRoom",

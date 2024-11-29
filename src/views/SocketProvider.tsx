@@ -11,18 +11,17 @@ function SocketProvider() {
   const token = useSelector(selectCurrentUserToken);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const [connectionError, setConnectionError] = useState<Error | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const onConnect = (socket: Socket) => () => {
-      console.log("socket connected successfully");
       setIsConnecting(false);
       setSocket(socket);
     };
 
-    const onConnectError = (error: Error) => {
+    const onError = (error: Error) => {
       setIsConnecting(false);
-      setConnectionError(error);
+      setError(error);
     };
 
     const initConnection = () => {
@@ -34,7 +33,8 @@ function SocketProvider() {
         transports: ["websocket"],
       });
       socketInstance.on(ChatEvents.connect, onConnect(socketInstance));
-      socketInstance.on(ChatEvents.connectError, onConnectError);
+      socketInstance.on(ChatEvents.connectError, onError);
+      socketInstance.on(ChatEvents.customError, onError);
 
       return socketInstance;
     };
@@ -49,13 +49,12 @@ function SocketProvider() {
     case Boolean(isConnecting): {
       return <Backdrop isOpen />;
     }
-    case connectionError &&
-      connectionError.message === "User token is invalid": {
+    case error && error.message === "User token is invalid": {
       return <Navigate to={`/${routes.login}`} />;
     }
-    case Boolean(connectionError): {
-      console.log(connectionError);
-      throw connectionError;
+    case Boolean(error): {
+      console.log(error);
+      throw error;
     }
     case socket !== null: {
       return <Chat socket={socket as Socket} />;
