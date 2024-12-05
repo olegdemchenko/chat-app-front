@@ -224,7 +224,7 @@ function Chat({ socket }: ChatProps) {
         })
       : socket.emit(
           ChatEvents.createRoom,
-          newRoom?.participants[0].userId,
+          [newRoom?.participants[0].userId, userId],
           (createdRoom: Room) => {
             updateRoomsState(createdRoom);
           },
