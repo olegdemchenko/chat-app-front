@@ -185,17 +185,19 @@ function Chat({ socket }: ChatProps) {
     } else {
       socket.emit(
         ChatEvents.findRoom,
-        participant.userId,
-        (foundRoom: Room | null) => {
-          const room = foundRoom
-            ? { ...foundRoom, messages: foundRoom.messages.reverse() }
-            : {
-                roomId: "newRoomId",
-                participants: [participant],
-                messages: [],
-                messagesCount: 0,
-                unreadMessagesCount: 0,
-              };
+        [participant.userId, userId],
+        (foundRoom: Room | "none") => {
+          console.log("found room", foundRoom);
+          const room =
+            foundRoom !== "none"
+              ? { ...foundRoom, messages: foundRoom.messages.reverse() }
+              : {
+                  roomId: "newRoomId",
+                  participants: [participant],
+                  messages: [],
+                  messagesCount: 0,
+                  unreadMessagesCount: 0,
+                };
           setNewRoom(room);
           setSelectedRoomId(null);
         },
