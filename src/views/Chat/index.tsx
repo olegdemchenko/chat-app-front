@@ -128,7 +128,7 @@ function Chat({ socket }: ChatProps) {
 
   useEffect(() => {
     socket.on(
-      ChatEvents.message,
+      ChatEvents.newMessage,
       (roomId: Room["roomId"], message: Message) => {
         dispatch(
           newMessage({ roomId, message, unread: selectedRoomId !== roomId }),
@@ -139,7 +139,7 @@ function Chat({ socket }: ChatProps) {
       },
     );
     return () => {
-      socket.off(ChatEvents.message);
+      socket.off(ChatEvents.newMessage);
     };
   }, [selectedRoomId]);
 
@@ -152,9 +152,8 @@ function Chat({ socket }: ChatProps) {
     }
     socket.emit(
       ChatEvents.findUsers,
-      query,
-      0,
-      (users: Participant[], count: number) => {
+      { userId, query, page: 0 },
+      ([users, count]: [users: Participant[], count: number]) => {
         setSearchResults({ query, users, count });
       },
     );
@@ -163,9 +162,8 @@ function Chat({ socket }: ChatProps) {
   const handleLoadMoreResults = (page: number, successCallback: () => void) => {
     socket.emit(
       ChatEvents.findUsers,
-      searchResults.query,
-      page,
-      (foundUsers: Participant[]) => {
+      { query: searchResults.query, page, userId },
+      ([foundUsers]: [users: Participant[], count: number]) => {
         setSearchResults({
           ...searchResults,
           users: [...searchResults.users, ...foundUsers],
@@ -232,7 +230,7 @@ function Chat({ socket }: ChatProps) {
   };
 
   const handleDeleteRoom = (deletedRoomId: Room["roomId"]) => {
-    socket.emit(ChatEvents.leaveRoom, deletedRoomId, () => {
+    socket.emit(ChatEvents.deleteRoom, deletedRoomId, () => {
       dispatch(deleteRoom(deletedRoomId));
       setSelectedRoomId(null);
     });
@@ -261,7 +259,7 @@ function Chat({ socket }: ChatProps) {
   };
 
   const handleSendMessage = (roomId: Room["roomId"], text: string) => {
-    socket.emit(ChatEvents.message, roomId, text, (message: Message) => {
+    socket.emit(ChatEvents.newMessage, roomId, text, (message: Message) => {
       dispatch(newMessage({ roomId, message, unread: false }));
     });
   };

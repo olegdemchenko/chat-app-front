@@ -8,23 +8,26 @@ export const routes = {
 
 export enum ChatEvents {
   connect = "connect",
-  connectError = "connect_error",
-  customError = "customError",
+  joinRooms = "joinRooms",
+  leaveRooms = "leaveRooms",
   getUserRooms = "getUserRooms",
+  getUserId = "getUserId",
+  isUserOnline = "isUserOnline",
   findUsers = "findUsers",
   findRoom = "findRoom",
   connectToRoom = "connectToRoom",
   createRoom = "createRoom",
-  leaveRoom = "leaveRoom",
+  deleteRoom = "deleteRoom",
   newRoom = "newRoom",
-  message = "message",
+  newMessage = "newMessage",
   loadMoreMessages = "loadMoreMessages",
+  readMessages = "readMessages",
   updateMessage = "updateMessage",
   deleteMessage = "deleteMessage",
-  readMessages = "readMessages",
   userJoin = "userJoin",
   userLeave = "userLeave",
-  getUserId = "getUserId",
+  customError = "customError",
+  connectError = "connect_error",
 }
 
 export const MESSAGES_PER_PAGE = 15;
