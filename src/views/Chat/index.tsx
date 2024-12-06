@@ -25,7 +25,11 @@ import {
   saveExtraMessages,
   markMessagesAsRead,
 } from "../../store/roomsSlice";
-import { saveUserId, selectCurrentUserId } from "../../store/userSlice";
+import {
+  saveUserId,
+  selectCurrentUser,
+  selectCurrentUserId,
+} from "../../store/userSlice";
 
 type ChatProps = {
   socket: Socket;
@@ -55,6 +59,7 @@ function Chat({ socket }: ChatProps) {
   const dispatch = useDispatch();
   const rooms = useSelector(selectAllRooms);
   const userId = useSelector(selectCurrentUserId) as string;
+  const user = useSelector(selectCurrentUser);
   const [selectedRoomId, setSelectedRoomId] = useState<Room["roomId"] | null>(
     null,
   );
@@ -232,10 +237,14 @@ function Chat({ socket }: ChatProps) {
   };
 
   const handleDeleteRoom = (deletedRoomId: Room["roomId"]) => {
-    socket.emit(ChatEvents.deleteRoom, deletedRoomId, () => {
-      dispatch(deleteRoom(deletedRoomId));
-      setSelectedRoomId(null);
-    });
+    socket.emit(
+      ChatEvents.deleteRoom,
+      { roomId: deletedRoomId, userId, userName: user?.name },
+      () => {
+        dispatch(deleteRoom(deletedRoomId));
+        setSelectedRoomId(null);
+      },
+    );
   };
 
   const handleLoadMoreMessages = (roomId: Room["roomId"], skip: number) => {
