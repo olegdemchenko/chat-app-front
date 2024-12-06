@@ -24,8 +24,8 @@ export enum ChatEvents {
   readMessages = "readMessages",
   updateMessage = "updateMessage",
   deleteMessage = "deleteMessage",
-  userJoin = "userJoin",
-  userLeave = "userLeave",
+  userOnline = "userOnline",
+  userOffline = "userOffline",
   customError = "customError",
   connectError = "connect_error",
 }
