@@ -73,10 +73,10 @@ function Chat({ socket }: ChatProps) {
   }, []);
 
   useEffect(() => {
-    socket.on(ChatEvents.userJoin, (userId: Participant["userId"]) => {
+    socket.on(ChatEvents.userOnline, (userId: Participant["userId"]) => {
       dispatch(userJoined(userId));
     });
-    socket.on(ChatEvents.userLeave, (userId: Participant["userId"]) => {
+    socket.on(ChatEvents.userOffline, (userId: Participant["userId"]) => {
       dispatch(userLeft(userId));
     });
     socket.on(ChatEvents.newRoom, (newRoom: Room) => {
@@ -98,8 +98,8 @@ function Chat({ socket }: ChatProps) {
     );
 
     return () => {
-      socket.off(ChatEvents.userJoin);
-      socket.off(ChatEvents.userLeave);
+      socket.off(ChatEvents.userOnline);
+      socket.off(ChatEvents.userOffline);
       socket.off(ChatEvents.newRoom);
       socket.off(ChatEvents.updateMessage);
       socket.off(ChatEvents.deleteMessage);
