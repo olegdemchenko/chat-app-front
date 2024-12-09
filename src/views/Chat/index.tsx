@@ -120,7 +120,10 @@ function Chat({ socket }: ChatProps) {
       userId,
     );
     if (unreadMessagesIds.length > 0) {
-      socket.emit(ChatEvents.readMessages, unreadMessagesIds);
+      socket.emit(ChatEvents.readMessages, {
+        messagesIds: unreadMessagesIds,
+        userId,
+      });
       dispatch(
         markMessagesAsRead({
           messagesIds: unreadMessagesIds,
@@ -139,7 +142,10 @@ function Chat({ socket }: ChatProps) {
           newMessage({ roomId, message, unread: selectedRoomId !== roomId }),
         );
         if (roomId === selectedRoomId) {
-          socket.emit(ChatEvents.readMessages, [message.messageId]);
+          socket.emit(ChatEvents.readMessages, {
+            messagedIds: [message.messageId],
+            userId,
+          });
         }
       },
     );
@@ -192,7 +198,6 @@ function Chat({ socket }: ChatProps) {
         ChatEvents.findRoom,
         [participant.userId, userId],
         (foundRoom: Room | "none") => {
-          console.log("found room", foundRoom);
           const room =
             foundRoom !== "none"
               ? { ...foundRoom, messages: foundRoom.messages.reverse() }
@@ -256,7 +261,10 @@ function Chat({ socket }: ChatProps) {
         dispatch(saveExtraMessages({ roomId, messages }));
         const unreadMessagesIds = getUnreadMessagesIds(messages, userId);
         if (unreadMessagesIds.length > 0) {
-          socket.emit(ChatEvents.readMessages, unreadMessagesIds);
+          socket.emit(ChatEvents.readMessages, {
+            messagedIds: [unreadMessagesIds],
+            userId,
+          });
           dispatch(
             markMessagesAsRead({
               messagesIds: unreadMessagesIds,
