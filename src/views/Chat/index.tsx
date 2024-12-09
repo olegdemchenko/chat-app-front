@@ -270,9 +270,13 @@ function Chat({ socket }: ChatProps) {
   };
 
   const handleSendMessage = (roomId: Room["roomId"], text: string) => {
-    socket.emit(ChatEvents.newMessage, roomId, text, (message: Message) => {
-      dispatch(newMessage({ roomId, message, unread: false }));
-    });
+    socket.emit(
+      ChatEvents.newMessage,
+      { roomId, text, author: userId },
+      (message: Message) => {
+        dispatch(newMessage({ roomId, message, unread: false }));
+      },
+    );
   };
 
   const handleUpdateMessage = (
@@ -281,9 +285,7 @@ function Chat({ socket }: ChatProps) {
   ) => {
     socket.emit(
       ChatEvents.updateMessage,
-      selectedRoomId,
-      messageId,
-      newText,
+      { messageId, roomId: selectedRoomId, newText },
       (updatedMessage: Message) => {
         dispatch(updateMessage({ roomId: selectedRoomId!, updatedMessage }));
       },
@@ -293,8 +295,7 @@ function Chat({ socket }: ChatProps) {
   const handleDeleteMessage = (messageId: Message["messageId"]) => {
     socket.emit(
       ChatEvents.deleteMessage,
-      selectedRoom?.roomId,
-      messageId,
+      { roomId: selectedRoom?.roomId, messageId },
       () => {
         dispatch(deleteMessage({ roomId: selectedRoomId!, messageId }));
       },
