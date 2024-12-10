@@ -143,7 +143,7 @@ function Chat({ socket }: ChatProps) {
         );
         if (roomId === selectedRoomId) {
           socket.emit(ChatEvents.readMessages, {
-            messagedIds: [message.messageId],
+            messagesIds: [message.messageId],
             userId,
           });
         }
@@ -259,14 +259,13 @@ function Chat({ socket }: ChatProps) {
   const handleLoadMoreMessages = (roomId: Room["roomId"], skip: number) => {
     socket.emit(
       ChatEvents.loadMoreMessages,
-      roomId,
-      skip,
+      { roomId, skip },
       (messages: Message[]) => {
         dispatch(saveExtraMessages({ roomId, messages }));
         const unreadMessagesIds = getUnreadMessagesIds(messages, userId);
         if (unreadMessagesIds.length > 0) {
           socket.emit(ChatEvents.readMessages, {
-            messagedIds: [unreadMessagesIds],
+            messagesIds: unreadMessagesIds,
             userId,
           });
           dispatch(
