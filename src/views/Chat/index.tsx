@@ -196,7 +196,7 @@ function Chat({ socket }: ChatProps) {
     } else {
       socket.emit(
         ChatEvents.findRoom,
-        [participant.userId, userId],
+        { participantsIds: [participant.userId, userId], userId },
         (foundRoom: Room | "none") => {
           const room =
             foundRoom !== "none"
@@ -229,9 +229,13 @@ function Chat({ socket }: ChatProps) {
       callback(newRoom.roomId);
     };
     newRoom!.messages.length > 0
-      ? socket.emit(ChatEvents.connectToRoom, newRoom?.roomId, () => {
-          updateRoomsState(newRoom as Room);
-        })
+      ? socket.emit(
+          ChatEvents.connectToRoom,
+          { roomId: newRoom?.roomId, userId, userName: user?.name },
+          () => {
+            updateRoomsState(newRoom as Room);
+          },
+        )
       : socket.emit(
           ChatEvents.createRoom,
           [userId, newRoom?.participants[0].userId],
