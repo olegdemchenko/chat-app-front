@@ -116,7 +116,7 @@ function Chat({ socket }: ChatProps) {
       return;
     }
     const unreadMessagesIds = getUnreadMessagesIds(
-      selectedRoom.messages.slice(-MESSAGES_PER_PAGE),
+      selectedRoom.messages,
       userId,
     );
     if (unreadMessagesIds.length > 0) {
