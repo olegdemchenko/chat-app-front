@@ -54,7 +54,8 @@ function SignUp() {
         onSubmit={signup}
       />
       <PageLink href={`/${routes.login}`} text={t("auth.signinLink")} />
-      <SocialMediaLinks />
+      {/* TODO finish auth via social networks */}
+      {/* <SocialMediaLinks /> */}
       <Copyright />
       <Backdrop isOpen={isLoading} />
     </CenteringContainer>

@@ -1,13 +1,13 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./views/Login";
-import Chat from "./views/Chat";
 import ErrorPage from "./views/ErrorPage";
 import SignUp from "./views/SignUp";
 import VerifyEmail from "./views/VerifyEmail";
 import VerificationSuccess from "./views/VerificationSuccess";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { routes } from "./constants";
+import SocketProvider from "./views/SocketProvider";
 
 function Router() {
   const router = createBrowserRouter([
@@ -19,7 +19,7 @@ function Router() {
           index: true,
           element: (
             <ProtectedRoute>
-              <Chat />
+              <SocketProvider />
             </ProtectedRoute>
           ),
         },

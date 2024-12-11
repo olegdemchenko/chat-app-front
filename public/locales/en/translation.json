@@ -19,4 +19,23 @@
       "incorrectEmail": "Please, provide a correct email address"
     }
   }
+  ,
+  "chat": {
+    "label": "chat-app",
+    "searchLabel": "Find your friends here",
+    "searchResults": "Search results",
+    "contacts": "Contacts",
+    "noUsersFound": "Unfortunately, we couldn't find any users, whose names include '{{ query }}'",
+    "noRooms": "You have no contacts yet",
+    "deleteContact": "Delete contact",
+    "deletePopupText": "Are you sure you want to delete the conversation with this user",
+    "delete": "Delete",
+    "close": "Close",
+    "startNewConversation": "You're starting a new conversation",
+    "typeMessage": "Type your first message below.",
+    "inputPlaceholder": "Type a message",
+    "lastModified": "Last modified: {{ date }}",
+    "joinBackChat": "Wanna join chat again? Just type a new message!",
+    "logout": "Log out"
+  }
 }
