@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Socket } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@mui/material";
@@ -8,9 +8,10 @@ import Label from "./Label";
 import { Message, Participant, Room } from "../../types";
 import Search from "./Search";
 import RoomsList from "./RoomsList";
-import { ChatEvents, MESSAGES_PER_PAGE } from "../../constants";
+import { ChatEvents } from "../../constants";
 import Messages from "./Messages";
 import Logout from "./Logout";
+import { Profile } from "../../types";
 
 import {
   selectAllRooms,
@@ -25,11 +26,7 @@ import {
   saveExtraMessages,
   markMessagesAsRead,
 } from "../../store/roomsSlice";
-import {
-  saveUserId,
-  selectCurrentUser,
-  selectCurrentUserId,
-} from "../../store/userSlice";
+import ProfileContext from "../../contexts/ProfileContext";
 
 type ChatProps = {
   socket: Socket;
@@ -58,8 +55,7 @@ const getUnreadMessagesIds = (messages: Message[], userId: string) => {
 function Chat({ socket }: ChatProps) {
   const dispatch = useDispatch();
   const rooms = useSelector(selectAllRooms);
-  const userId = useSelector(selectCurrentUserId) as string;
-  const user = useSelector(selectCurrentUser);
+  const { userId, name } = useContext(ProfileContext) as Profile;
   const [selectedRoomId, setSelectedRoomId] = useState<Room["roomId"] | null>(
     null,
   );
@@ -71,9 +67,6 @@ function Chat({ socket }: ChatProps) {
   useEffect(() => {
     socket.emit(ChatEvents.getUserRooms, (rooms: Room[]) => {
       dispatch(addRooms(rooms));
-    });
-    socket.emit(ChatEvents.getUserId, (userId: string) => {
-      dispatch(saveUserId(userId));
     });
   }, []);
 
@@ -231,7 +224,7 @@ function Chat({ socket }: ChatProps) {
     newRoom!.messages.length > 0
       ? socket.emit(
           ChatEvents.connectToRoom,
-          { roomId: newRoom?.roomId, userId, userName: user?.name },
+          { roomId: newRoom?.roomId, userId, userName: name },
           () => {
             updateRoomsState(newRoom as Room);
           },
@@ -248,7 +241,7 @@ function Chat({ socket }: ChatProps) {
   const handleDeleteRoom = (deletedRoomId: Room["roomId"]) => {
     socket.emit(
       ChatEvents.deleteRoom,
-      { roomId: deletedRoomId, userId, userName: user?.name },
+      { roomId: deletedRoomId, userId, userName: name },
       () => {
         dispatch(deleteRoom(deletedRoomId));
         setSelectedRoomId(null);

@@ -5,7 +5,7 @@ import ErrorPage from "./views/ErrorPage";
 import SignUp from "./views/SignUp";
 import VerifyEmail from "./views/VerifyEmail";
 import VerificationSuccess from "./views/VerificationSuccess";
-import VerifyProfile from "./components/VerifyProfile";
+import ProfileProvider from "./components/ProfileProvider";
 import { routes } from "./constants";
 import SocketProvider from "./views/SocketProvider";
 
@@ -18,9 +18,9 @@ function Router() {
         {
           index: true,
           element: (
-            <VerifyProfile>
+            <ProfileProvider>
               <SocketProvider />
-            </VerifyProfile>
+            </ProfileProvider>
           ),
         },
         {
