@@ -8,21 +8,21 @@ import VerificationSuccess from "./views/VerificationSuccess";
 import ProfileProvider from "./components/ProfileProvider";
 import { routes } from "./constants";
 import SocketProvider from "./views/SocketProvider";
+import Chat from "./views/Chat";
 
 function Router() {
   const router = createBrowserRouter([
     {
       path: "/",
       errorElement: <ErrorPage />,
+      element: (
+        <ProfileProvider>
+          <SocketProvider>
+            <Chat />
+          </SocketProvider>
+        </ProfileProvider>
+      ),
       children: [
-        {
-          index: true,
-          element: (
-            <ProfileProvider>
-              <SocketProvider />
-            </ProfileProvider>
-          ),
-        },
         {
           path: routes.login,
           element: <Login />,

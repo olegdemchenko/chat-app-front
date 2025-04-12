@@ -1,34 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
-import { Navigate } from "react-router-dom";
-import Chat from "./Chat";
 import Backdrop from "../components/Backdrop";
-import { ChatEvents, routes } from "../constants";
+import SocketContext from "../contexts/SocketContext";
+import { ChatEvents } from "../constants";
+import useThrowOnRender from "../hooks/useThrowOnRender";
 
-function SocketProvider() {
+type SocketProviderProps = {
+  children: React.JSX.Element;
+};
+
+function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const throwError = useThrowOnRender();
 
   useEffect(() => {
     const onConnect = (socket: Socket) => () => {
-      setIsConnecting(false);
       setSocket(socket);
     };
 
-    const onError = (error: Error) => {
-      setIsConnecting(false);
-      setError(error);
-    };
-
     const initConnection = () => {
-      setIsConnecting(true);
-      const socketInstance = io(process.env.REACT_APP_CHAT_HOST as string, {
-        transports: ["websocket"],
-      });
+      const socketInstance = io(process.env.REACT_APP_CHAT_HOST as string);
       socketInstance.on(ChatEvents.connect, onConnect(socketInstance));
-      socketInstance.on(ChatEvents.connectError, onError);
-      socketInstance.on(ChatEvents.customError, onError);
+      socketInstance.on(ChatEvents.connectError, throwError);
+      socketInstance.on(ChatEvents.reconnectError, throwError);
 
       return socketInstance;
     };
@@ -39,23 +33,11 @@ function SocketProvider() {
     };
   }, []);
 
-  switch (true) {
-    case Boolean(isConnecting): {
-      return <Backdrop isOpen />;
-    }
-    case error && error.message === "User token is invalid": {
-      return <Navigate to={`/${routes.login}`} />;
-    }
-    case Boolean(error): {
-      console.log(error);
-      throw error;
-    }
-    case socket !== null: {
-      return <Chat socket={socket as Socket} />;
-    }
-    default:
-      return null;
-  }
+  return socket?.connected ? (
+    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+  ) : (
+    <Backdrop isOpen />
+  );
 }
 
 export default SocketProvider;

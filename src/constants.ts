@@ -26,8 +26,9 @@ export enum ChatEvents {
   deleteMessage = "deleteMessage",
   userOnline = "userOnline",
   userOffline = "userOffline",
-  customError = "customError",
+  error = "error",
   connectError = "connect_error",
+  reconnectError = "reconnect_error",
 }
 
 export const MESSAGES_PER_PAGE = 15;

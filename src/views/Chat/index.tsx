@@ -27,10 +27,7 @@ import {
   markMessagesAsRead,
 } from "../../store/roomsSlice";
 import ProfileContext from "../../contexts/ProfileContext";
-
-type ChatProps = {
-  socket: Socket;
-};
+import SocketContext from "../../contexts/SocketContext";
 
 export type Results = {
   users: readonly Participant[];
@@ -52,7 +49,8 @@ const getUnreadMessagesIds = (messages: Message[], userId: string) => {
   );
 };
 
-function Chat({ socket }: ChatProps) {
+function Chat() {
+  const socket = useContext(SocketContext) as Socket;
   const dispatch = useDispatch();
   const rooms = useSelector(selectAllRooms);
   const { userId, name } = useContext(ProfileContext) as Profile;
