@@ -1,61 +1,52 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { UserAuthData } from "../types";
+import { Profile } from "../types";
 
-type LoginPayload = {
+type SignInPayload = {
   username: string;
   password: string;
 };
 
-type SignupPayload = {
+type SignUpPayload = {
   username: string;
   password: string;
   email: string;
 };
 
-type SignupResponse = {
-  status: string;
-};
-
-type LogoutResponse = {
-  status: string;
+type SignInResponse = {
+  access_token: string;
 };
 
 export const authAPI = createApi({
   reducerPath: "authAPI",
   baseQuery: fetchBaseQuery({
-    baseUrl: `/api/auth`,
+    baseUrl: `/auth`,
   }),
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({
-    identifyMe: builder.query<UserAuthData, void>({
-      query: () => "/me",
+    profile: builder.query<Profile, string>({
+      query: (token: string) => ({
+        url: "/profile",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
     }),
-    login: builder.mutation<UserAuthData, LoginPayload>({
+    signIn: builder.mutation<SignInResponse, SignInPayload>({
       query: (payload) => ({
-        url: "/login",
+        url: "/signin",
         method: "POST",
         body: payload,
       }),
     }),
-    signup: builder.mutation<SignupResponse, SignupPayload>({
+    signUp: builder.mutation<SignInResponse, SignUpPayload>({
       query: (payload) => ({
         url: "/signup",
         method: "POST",
         body: payload,
       }),
     }),
-    logout: builder.mutation<LogoutResponse, void>({
-      query: () => ({
-        url: "/logout",
-        method: "POST",
-      }),
-    }),
   }),
 });
 
-export const {
-  useIdentifyMeQuery,
-  useLoginMutation,
-  useSignupMutation,
-  useLogoutMutation,
-} = authAPI;
+export const { useProfileQuery, useSignInMutation, useSignUpMutation } =
+  authAPI;

@@ -6,10 +6,10 @@ import { Navigate } from "react-router-dom";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
-import { useLoginMutation } from "../services/auth";
+import { useSignInMutation } from "../services/auth";
 import Copyright from "../components/Copyright";
 import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
-import SocialMediaLinks from "../components/SocialMediaLinks";
+//import SocialMediaLinks from "../components/SocialMediaLinks";
 import PageLink from "../components/PageLink";
 import Backdrop from "../components/Backdrop";
 import CenteringContainer from "../components/CenteringContainer";
@@ -18,18 +18,22 @@ import { routes } from "../constants";
 const getRelevantAuthError = (
   error: FetchBaseQueryError | SerializedError | undefined,
 ) => {
-  const isUserNotFound = error && "status" in error && error.status === 404;
+  const isUserNotFound = error && "status" in error && error.status === 401;
   if (isUserNotFound) {
     return { type: AuthorizationErrors.incorrectCredentials };
+  }
+  if (error && !isUserNotFound) {
+    throw error;
   }
   return null;
 };
 
 export default function Login() {
-  const [login, { data, error, isLoading }] = useLoginMutation();
+  const [login, { data, error, isLoading }] = useSignInMutation();
   const { t } = useTranslation();
 
   if (data) {
+    localStorage.setItem("access_token", data.access_token);
     return <Navigate to="/" />;
   }
 
