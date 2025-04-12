@@ -4,11 +4,8 @@ import { Navigate } from "react-router-dom";
 import Chat from "./Chat";
 import Backdrop from "../components/Backdrop";
 import { ChatEvents, routes } from "../constants";
-import { useSelector } from "react-redux";
-import { selectCurrentUserToken } from "../store/userSlice";
 
 function SocketProvider() {
-  const token = useSelector(selectCurrentUserToken);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -27,9 +24,6 @@ function SocketProvider() {
     const initConnection = () => {
       setIsConnecting(true);
       const socketInstance = io(process.env.REACT_APP_CHAT_HOST as string, {
-        auth: {
-          token,
-        },
         transports: ["websocket"],
       });
       socketInstance.on(ChatEvents.connect, onConnect(socketInstance));
