@@ -13,13 +13,11 @@
     "errorPageText": "Oops! Something bad happened :( Error: {{ error }} ",
     "validation": {
       "invalidCreds": "Username or password are incorrect",
-      "duplicatedEmail": "This email has already been used",
-      "duplicatedUsername": "User with such name already exists",
+      "duplicatedCredentials": "These credentials are already in use. Try changing them",
       "fieldIsRequired": "{{ field }} is required",
       "incorrectEmail": "Please, provide a correct email address"
     }
-  }
-  ,
+  },
   "chat": {
     "label": "chat-app",
     "searchLabel": "Find your friends here",

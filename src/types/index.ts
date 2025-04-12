@@ -1,12 +1,7 @@
-export type User = {
+export type Profile = {
   name: string;
   email: string;
-  isVerified: boolean;
-};
-
-export type UserAuthData = {
-  user: User;
-  token: string;
+  userId: string;
 };
 
 export type Participant = {

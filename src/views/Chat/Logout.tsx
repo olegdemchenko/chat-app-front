@@ -1,17 +1,18 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useLogoutMutation } from "../../services/auth";
+import { routes } from "../../constants";
 
 function Logout() {
-  const [logout, { data, isLoading }] = useLogoutMutation();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  if (data?.status) {
-    return <Navigate to="/login" />;
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate(routes.login);
+  };
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", paddingBottom: 5 }}>
@@ -20,8 +21,7 @@ function Logout() {
         startIcon={<ArrowBackIcon />}
         size="large"
         variant="contained"
-        disabled={isLoading}
-        onClick={() => logout()}
+        onClick={handleLogout}
       >
         {t("chat.logout")}
       </Button>

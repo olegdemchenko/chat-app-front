@@ -8,14 +8,12 @@ import validationRules from "./validationRules";
 
 export enum AuthorizationErrors {
   incorrectCredentials = "incorrectCredentials",
-  duplicatedUsername = "duplicatedUsername",
-  duplicatedEmail = "duplicatedEmail",
+  duplicatedCredentials = "duplicatedCredentials",
 }
 
 const affectedFormFields = {
   [AuthorizationErrors.incorrectCredentials]: ["username", "password"],
-  [AuthorizationErrors.duplicatedEmail]: ["email"],
-  [AuthorizationErrors.duplicatedUsername]: ["username"],
+  [AuthorizationErrors.duplicatedCredentials]: ["username", "email"],
 } as { [key in AuthorizationErrors]: ReadonlyArray<keyof FormState> };
 
 type AuthError = { type: AuthorizationErrors } | null;
@@ -36,8 +34,7 @@ function AuthForm({ variant, authError, onSubmit }: AuthFormProps) {
   const { t } = useTranslation();
   const authorizationErrorMessages = {
     incorrectCredentials: t("auth.validation.invalidCreds"),
-    duplicatedEmail: t("auth.validation.duplicatedEmail"),
-    duplicatedUsername: t("auth.validation.duplicatedUsername"),
+    duplicatedCredentials: t("auth.validation.duplicatedCredentials"),
   } as {
     [key in AuthorizationErrors]: string;
   };

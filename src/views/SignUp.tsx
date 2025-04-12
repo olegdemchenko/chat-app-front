@@ -6,10 +6,10 @@ import Avatar from "@mui/material/Avatar";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
-import { useSignupMutation } from "../services/auth";
+import { useSignUpMutation } from "../services/auth";
 import Copyright from "../components/Copyright";
 import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
-import SocialMediaLinks from "../components/SocialMediaLinks";
+//import SocialMediaLinks from "../components/SocialMediaLinks";
 import PageLink from "../components/PageLink";
 import Backdrop from "../components/Backdrop";
 import CenteringContainer from "../components/CenteringContainer";
@@ -18,26 +18,26 @@ import { routes } from "../constants";
 const getRelevantAuthError = (
   error: FetchBaseQueryError | SerializedError | undefined,
 ) => {
-  const isUsernameTaken = error && "status" in error && error.status === 401;
-  const isEmailTaken = error && "status" in error && error.status === 409;
-  switch (true) {
-    case isEmailTaken: {
-      return { type: AuthorizationErrors.duplicatedEmail };
-    }
-    case isUsernameTaken: {
-      return { type: AuthorizationErrors.duplicatedUsername };
-    }
-    default:
-      return null;
+  const areCredentialsTaken =
+    error && "status" in error && error.status === 409;
+  if (areCredentialsTaken) {
+    return { type: AuthorizationErrors.duplicatedCredentials };
   }
+  if (error && !areCredentialsTaken) {
+    throw error;
+  }
+  return null;
 };
 
 function SignUp() {
   const { t } = useTranslation();
-  const [signup, { data, error, isLoading }] = useSignupMutation();
+  const [signup, { data, error, isLoading }] = useSignUpMutation();
 
   if (data) {
-    return <Navigate to={`/${routes.verifyEmail}`} />;
+    localStorage.setItem("access_token", data.access_token);
+    return <Navigate to="/" />;
+    // TODO add email verification
+    //return <Navigate to={`/${routes.verifyEmail}`} />;
   }
 
   return (
