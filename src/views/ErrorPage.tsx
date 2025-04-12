@@ -4,7 +4,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { red } from "@mui/material/colors";
 import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import CenteringContainer from "../components/CenteringContainer";
+import CenteringContainer from "components/CenteringContainer";
 
 function ErrorPage() {
   const error = useRouteError() as Error;

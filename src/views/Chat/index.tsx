@@ -5,13 +5,13 @@ import { Box } from "@mui/material";
 import Container from "./Container";
 import Aside from "./Aside";
 import Label from "./Label";
-import { Message, Participant, Room } from "../../types";
+import { Message, Participant, Room } from "types";
 import Search from "./Search";
 import RoomsList from "./RoomsList";
-import { ChatEvents } from "../../constants";
+import { ChatEvents } from "app/constants";
 import Messages from "./Messages";
 import Logout from "./Logout";
-import { Profile } from "../../types";
+import { Profile } from "types";
 
 import {
   selectAllRooms,

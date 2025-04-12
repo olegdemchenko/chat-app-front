@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid } from "@mui/material";
-import { Room, Message } from "../../../types";
+import { Room, Message } from "types";
 import StartChatting from "./StartChatting";
 import Input from "./Input";
 import Header from "./Header";

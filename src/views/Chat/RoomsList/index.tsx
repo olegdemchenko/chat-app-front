@@ -4,7 +4,7 @@ import List from "@mui/material/List";
 import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Room } from "../../../types";
+import { Room } from "types";
 import DeleteRoomDialog from "./DeleteRoomDialog";
 import RoomItem from "./RoomItem";
 

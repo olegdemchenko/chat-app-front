@@ -5,7 +5,7 @@ import cn from "classnames";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import IconButton from "@mui/material/IconButton";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ContactAvatar from "../../../components/ContactAvatar";
+import ContactAvatar from "components/ContactAvatar";
 
 type RoomItemProps = {
   selected: boolean;

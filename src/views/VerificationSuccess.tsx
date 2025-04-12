@@ -4,7 +4,7 @@ import { Typography } from "@mui/material";
 import { green } from "@mui/material/colors";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import CenteringContainer from "../components/CenteringContainer";
+import CenteringContainer from "components/CenteringContainer";
 
 function VerificationSuccess() {
   const { t } = useTranslation();

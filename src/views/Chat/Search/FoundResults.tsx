@@ -4,9 +4,9 @@ import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import { ListItem, Typography, ListItemAvatar, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Participant } from "../../../types";
-import ContactAvatar from "../../../components/ContactAvatar";
-import ScrollableList from "../../../components/ScrollableList";
+import { Participant } from "types";
+import ContactAvatar from "components/ContactAvatar";
+import ScrollableList from "components/ScrollableList";
 import { Results } from "..";
 
 type FoundResultsProps = {

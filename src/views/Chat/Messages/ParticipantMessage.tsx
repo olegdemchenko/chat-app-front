@@ -2,8 +2,8 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { formatRelative, max } from "date-fns";
-import { Message, Participant } from "../../../types";
-import ContactAvatar from "../../../components/ContactAvatar";
+import { Message, Participant } from "types";
+import ContactAvatar from "components/ContactAvatar";
 
 type ParticipantMessageProps = {
   message: Message;

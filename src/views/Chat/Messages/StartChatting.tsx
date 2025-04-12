@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import illustration from "../../../assets/img/chat-illustration.svg";
+import illustration from "assets/img/chat-illustration.svg";
 
 function StartChatting() {
   const { t } = useTranslation();

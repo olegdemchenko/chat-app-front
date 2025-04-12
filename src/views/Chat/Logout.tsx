@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Box, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { routes } from "../../constants";
+import { routes } from "app/constants";
 
 function Logout() {
   const { t } = useTranslation();

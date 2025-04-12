@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
-import Backdrop from "../components/Backdrop";
-import SocketContext from "../contexts/SocketContext";
-import { ChatEvents } from "../constants";
-import useThrowOnRender from "../hooks/useThrowOnRender";
+import Backdrop from "./Backdrop";
+import SocketContext from "contexts/SocketContext";
+import { ChatEvents } from "app/constants";
+import useThrowOnRender from "hooks/useThrowOnRender";
 
 type SocketProviderProps = {
   children: React.JSX.Element;

@@ -6,14 +6,14 @@ import Avatar from "@mui/material/Avatar";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useTranslation } from "react-i18next";
-import { useSignUpMutation } from "../services/auth";
-import Copyright from "../components/Copyright";
-import AuthForm, { AuthorizationErrors } from "../components/AuthForm";
-//import SocialMediaLinks from "../components/SocialMediaLinks";
-import PageLink from "../components/PageLink";
-import Backdrop from "../components/Backdrop";
-import CenteringContainer from "../components/CenteringContainer";
-import { routes } from "../constants";
+import { useSignUpMutation } from "services/auth";
+import Copyright from "components/Copyright";
+import AuthForm, { AuthorizationErrors } from "components/AuthForm";
+//import SocialMediaLinks from "components/SocialMediaLinks";
+import PageLink from "components/PageLink";
+import Backdrop from "components/Backdrop";
+import CenteringContainer from "components/CenteringContainer";
+import { routes } from "app/constants";
 
 const getRelevantAuthError = (
   error: FetchBaseQueryError | SerializedError | undefined,

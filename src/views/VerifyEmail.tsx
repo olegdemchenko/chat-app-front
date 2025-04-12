@@ -3,7 +3,7 @@ import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
 import { Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useTranslation } from "react-i18next";
-import CenteringContainer from "../components/CenteringContainer";
+import CenteringContainer from "components/CenteringContainer";
 
 function VerifyEmail() {
   const { t } = useTranslation();

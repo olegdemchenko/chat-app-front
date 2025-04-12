@@ -1,7 +1,7 @@
 import React from "react";
 import { Paper, Box, Typography } from "@mui/material";
-import { Participant } from "../../../types";
-import ContactAvatar from "../../../components/ContactAvatar";
+import { Participant } from "types";
+import ContactAvatar from "components/ContactAvatar";
 
 type HeaderProps = {
   participants: Participant[];

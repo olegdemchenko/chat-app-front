@@ -12,7 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Message } from "../../../types";
+import { Message } from "types";
 
 type UserOwnMessageProps = {
   message: Message;

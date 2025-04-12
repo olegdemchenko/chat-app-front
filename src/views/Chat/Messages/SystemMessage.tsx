@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { formatRelative } from "date-fns";
-import { Message } from "../../../types";
+import { Message } from "types";
 
 type SystemMessageProps = {
   message: Message;

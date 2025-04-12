@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import Backdrop from "./Backdrop";
-import ProfileContext from "../contexts/ProfileContext";
-import { useProfileQuery } from "../services/auth";
-import { Profile } from "../types";
+import ProfileContext from "contexts/ProfileContext";
+import { useProfileQuery } from "services/auth";
+import { Profile } from "types";
 
 type ProfileProviderProps = {
   children: React.JSX.Element;

@@ -1,10 +1,10 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { Message, Room } from "../../../types";
+import { Message, Room } from "types";
 import UserOwnMessage from "./UserOwnMessage";
 import ParticipantMessage from "./ParticipantMessage";
 import SystemMessage from "./SystemMessage";
-import ScrollableList from "../../../components/ScrollableList";
+import ScrollableList from "components/ScrollableList";
 
 type MessagesListProps = {
   room: Room;

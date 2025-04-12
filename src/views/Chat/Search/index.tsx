@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDebounceValue } from "usehooks-ts";
 import { Results } from "..";
-import { Participant } from "../../../types";
+import { Participant } from "types";
 import FoundResults from "./FoundResults";
 import NameInput from "./NameInput";
 
