@@ -63,7 +63,7 @@ function Chat() {
     rooms.find(({ roomId }) => roomId === selectedRoomId) ?? null;
 
   useEffect(() => {
-    socket.emit(ChatEvents.getUserRooms, (rooms: Room[]) => {
+    socket.emit(ChatEvents.getUserRooms, userId, (rooms: Room[]) => {
       dispatch(addRooms(rooms));
     });
   }, []);
