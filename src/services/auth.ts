@@ -19,7 +19,7 @@ type SignInResponse = {
 export const authAPI = createApi({
   reducerPath: "authAPI",
   baseQuery: fetchBaseQuery({
-    baseUrl: `/auth`,
+    baseUrl: `${process.env.REACT_APP_HTTP_HOST}/auth`,
   }),
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({

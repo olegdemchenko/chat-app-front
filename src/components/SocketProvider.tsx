@@ -22,8 +22,9 @@ function SocketProvider({ children }: SocketProviderProps) {
     };
 
     const initConnection = () => {
-      const socketInstance = io(process.env.REACT_APP_CHAT_HOST as string, {
+      const socketInstance = io(process.env.REACT_APP_WS_HOST as string, {
         auth: { userId },
+        transports: ["websocket"],
       });
       socketInstance.on(ChatEvents.connect, onConnect(socketInstance));
       socketInstance.on(ChatEvents.connectError, throwError);
