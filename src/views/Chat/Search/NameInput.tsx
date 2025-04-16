@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Box, Input, InputAdornment } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useDebounceValue } from "usehooks-ts";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { blue } from "@mui/material/colors";
@@ -45,20 +44,9 @@ type NameInputProps = {
 
 function NameInput({ query, onEnter, onDrop }: NameInputProps) {
   const { t } = useTranslation();
-  // const [text, setText] = useState(initialText);
-  // const [debouncedText] = useDebounceValue(text, 100);
-
-  // useEffect(() => {
-  //   onEnter(debouncedText);
-  // }, [debouncedText]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     onEnter(e.target.value);
-
-  // const handleDrop = () => {
-  //   setText("");
-  //   onDrop();
-  // };
 
   return (
     <Box
@@ -84,6 +72,7 @@ function NameInput({ query, onEnter, onDrop }: NameInputProps) {
         value={query}
         onChange={handleTextChange}
         sx={searchInputStyles}
+        onBlur={onDrop}
       />
     </Box>
   );
