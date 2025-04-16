@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Participant } from "types";
 import ContactAvatar from "components/ContactAvatar";
 import ScrollableList from "components/ScrollableList";
-import { Results } from "..";
+import { Results } from "./types";
 
 type FoundResultsProps = {
   results: Results;

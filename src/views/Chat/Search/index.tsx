@@ -1,35 +1,68 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useDebounceValue } from "usehooks-ts";
-import { Results } from "..";
-import { Participant } from "types";
+import ProfileContext from "contexts/ProfileContext";
+import SocketContext from "contexts/SocketContext";
+import { Participant, Profile } from "types";
 import FoundResults from "./FoundResults";
 import NameInput from "./NameInput";
+import { ChatEvents } from "app/constants";
+import { Socket } from "socket.io-client";
+import { Results } from "./types";
+
+const initialResults: Results = {
+  users: [],
+  count: 0,
+  query: "",
+};
 
 type SearchProps = {
-  results: Results;
-  onSubmit: (query: string) => void;
-  onLoadMore: (page: number, successCallback: () => void) => void;
-  onClear: () => void;
   onSelect: (participant: Participant) => void;
 };
 
-function Search({
-  results,
-  onSubmit,
-  onLoadMore,
-  onClear,
-  onSelect,
-}: SearchProps) {
+function Search({ onSelect }: SearchProps) {
+  const { userId } = useContext(ProfileContext) as Profile;
+  const socket = useContext(SocketContext) as Socket;
+  const [results, setResults] = useState<Results>(initialResults);
   const [query, setQuery] = useState<string>("");
   const [debouncedQuery] = useDebounceValue(query, 100);
 
+  const handleGetResults = (query: string) => {
+    if (query.length === 0) {
+      setResults(initialResults);
+      return;
+    }
+    socket.emit(
+      ChatEvents.findUsers,
+      { userId, query, page: 0 },
+      ([users, count]: [users: Participant[], count: number]) => {
+        setResults({ query, users, count });
+      },
+    );
+  };
+
+  const handleLoadMoreResults = (page: number, successCallback: () => void) => {
+    socket.emit(
+      ChatEvents.findUsers,
+      { query: results.query, page, userId },
+      ([foundUsers]: [users: Participant[], count: number]) => {
+        setResults({
+          ...results,
+          users: [...results.users, ...foundUsers],
+        });
+        successCallback();
+      },
+    );
+  };
+
+  const handleClearResults = () => setResults(initialResults);
+
   useEffect(() => {
-    onSubmit(debouncedQuery);
+    handleGetResults(debouncedQuery);
   }, [debouncedQuery]);
 
   const handleDropQuery = () => {
     setQuery("");
-    onClear();
+    handleClearResults();
   };
 
   const handleSelect = (user: Participant) => {
@@ -43,7 +76,7 @@ function Search({
       <FoundResults
         results={results}
         onSelect={handleSelect}
-        onLoadMore={onLoadMore}
+        onLoadMore={handleLoadMoreResults}
       />
     </>
   );

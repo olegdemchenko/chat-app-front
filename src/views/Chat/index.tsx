@@ -29,18 +29,6 @@ import {
 import ProfileContext from "../../contexts/ProfileContext";
 import SocketContext from "../../contexts/SocketContext";
 
-export type Results = {
-  users: readonly Participant[];
-  query: string;
-  count: number;
-};
-
-const initialResults: Results = {
-  users: [],
-  count: 0,
-  query: "",
-};
-
 const getUnreadMessagesIds = (messages: Message[], userId: string) => {
   return messages.reduce(
     (acc, message) =>
@@ -145,38 +133,6 @@ function Chat() {
     };
   }, [selectedRoomId]);
 
-  const [searchResults, setSearchResults] = useState<Results>(initialResults);
-
-  const handleEnterQuery = (query: string) => {
-    if (query.length === 0) {
-      setSearchResults(initialResults);
-      return;
-    }
-    socket.emit(
-      ChatEvents.findUsers,
-      { userId, query, page: 0 },
-      ([users, count]: [users: Participant[], count: number]) => {
-        setSearchResults({ query, users, count });
-      },
-    );
-  };
-
-  const handleLoadMoreResults = (page: number, successCallback: () => void) => {
-    socket.emit(
-      ChatEvents.findUsers,
-      { query: searchResults.query, page, userId },
-      ([foundUsers]: [users: Participant[], count: number]) => {
-        setSearchResults({
-          ...searchResults,
-          users: [...searchResults.users, ...foundUsers],
-        });
-        successCallback();
-      },
-    );
-  };
-
-  const handleClearSearchResults = () => setSearchResults(initialResults);
-
   const handleSelectParticipant = (participant: Participant) => {
     const existingRoom = rooms.find(
       ({ participants }) => participants[0].userId === participant.userId,
@@ -204,7 +160,7 @@ function Chat() {
         },
       );
     }
-    handleClearSearchResults();
+    // handleClearSearchResults();
   };
 
   const handleSelectRoom = (roomId: Room["roomId"]) => {
@@ -310,13 +266,7 @@ function Chat() {
         <Aside>
           <Box>
             <Label />
-            <Search
-              results={searchResults}
-              onSubmit={handleEnterQuery}
-              onLoadMore={handleLoadMoreResults}
-              onClear={handleClearSearchResults}
-              onSelect={handleSelectParticipant}
-            />
+            <Search onSelect={handleSelectParticipant} />
             <RoomsList
               rooms={rooms}
               newRoom={newRoom}
