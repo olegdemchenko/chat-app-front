@@ -6,9 +6,9 @@ import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Room } from "types";
 import DeleteRoomDialog from "./DeleteRoomDialog";
-import RoomItem from "./RoomItem";
+import RoomItem from "./Room";
 
-type RoomsListProps = {
+type RoomsProps = {
   rooms: Room[];
   newRoom: Room | null;
   selectedRoom: Room | null;
@@ -16,13 +16,13 @@ type RoomsListProps = {
   onDelete: (roomId: Room["roomId"]) => void;
 };
 
-function RoomsList({
+function Rooms({
   rooms,
   newRoom,
   selectedRoom,
   onSelect,
   onDelete,
-}: RoomsListProps) {
+}: RoomsProps) {
   const { t } = useTranslation();
   const [deleteRoom, setDeleteRoom] = useState<Room | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -88,4 +88,4 @@ function RoomsList({
   );
 }
 
-export default RoomsList;
+export default Rooms;

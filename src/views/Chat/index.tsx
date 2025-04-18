@@ -7,7 +7,7 @@ import Aside from "./Aside";
 import Label from "./Label";
 import { Message, Participant, Room } from "types";
 import Search from "./Search";
-import RoomsList from "./RoomsList";
+import Rooms from "./Rooms";
 import { ChatEvents } from "app/constants";
 import Messages from "./Messages";
 import Logout from "./Logout";
@@ -25,9 +25,9 @@ import {
   deleteMessage,
   saveExtraMessages,
   markMessagesAsRead,
-} from "../../store/roomsSlice";
-import ProfileContext from "../../contexts/ProfileContext";
-import SocketContext from "../../contexts/SocketContext";
+} from "store/roomsSlice";
+import ProfileContext from "contexts/ProfileContext";
+import SocketContext from "contexts/SocketContext";
 
 const getUnreadMessagesIds = (messages: Message[], userId: string) => {
   return messages.reduce(
@@ -160,7 +160,6 @@ function Chat() {
         },
       );
     }
-    // handleClearSearchResults();
   };
 
   const handleSelectRoom = (roomId: Room["roomId"]) => {
@@ -267,7 +266,7 @@ function Chat() {
           <Box>
             <Label />
             <Search onSelect={handleSelectParticipant} />
-            <RoomsList
+            <Rooms
               rooms={rooms}
               newRoom={newRoom}
               selectedRoom={selectedRoom}

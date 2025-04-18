@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ContactAvatar from "components/ContactAvatar";
 
-type RoomItemProps = {
+type RoomProps = {
   selected: boolean;
   name: string;
   isOnline: boolean;
@@ -17,7 +17,7 @@ type RoomItemProps = {
   onDelete?: () => void;
 };
 
-function RoomItem({
+function Room({
   selected,
   name,
   isOnline,
@@ -25,7 +25,7 @@ function RoomItem({
   deletable = false,
   onSelect,
   onDelete,
-}: RoomItemProps) {
+}: RoomProps) {
   return (
     <ListItem
       sx={{
@@ -58,4 +58,4 @@ function RoomItem({
   );
 }
 
-export default RoomItem;
+export default Room;
