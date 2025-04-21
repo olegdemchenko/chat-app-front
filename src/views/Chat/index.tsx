@@ -5,13 +5,14 @@ import { Box } from "@mui/material";
 import Container from "./Container";
 import Aside from "./Aside";
 import Label from "./Label";
-import { Message, Participant, Room } from "types";
+import { Participant, Room } from "types";
 import Search from "./Search";
 import Rooms from "./Rooms";
 import { ChatEvents } from "app/constants";
 import Messages from "./Messages";
 import Logout from "./Logout";
 import { Profile } from "types";
+import { RoomTypes } from "app/constants";
 
 import {
   selectAllRooms,
@@ -20,22 +21,9 @@ import {
   addRooms,
   userJoined,
   userLeft,
-  newMessage,
-  updateMessage,
-  deleteMessage,
-  saveExtraMessages,
-  markMessagesAsRead,
 } from "store/roomsSlice";
 import ProfileContext from "contexts/ProfileContext";
 import SocketContext from "contexts/SocketContext";
-
-const getUnreadMessagesIds = (messages: Message[], userId: string) => {
-  return messages.reduce(
-    (acc, message) =>
-      message.readBy.includes(userId) ? acc : [...acc, message.messageId],
-    [] as string[],
-  );
-};
 
 function Chat() {
   const socket = useContext(SocketContext) as Socket;
@@ -46,6 +34,7 @@ function Chat() {
     null,
   );
   const [newRoom, setNewRoom] = useState<Room | null>(null);
+  const [roomType, setRoomType] = useState<RoomTypes | null>(null);
 
   const selectedRoom =
     rooms.find(({ roomId }) => roomId === selectedRoomId) ?? null;
@@ -67,20 +56,6 @@ function Chat() {
       dispatch(addRoom(newRoom));
     });
 
-    socket.on(
-      ChatEvents.updateMessage,
-      (roomId: Room["roomId"], updatedMessage: Message) => {
-        dispatch(updateMessage({ roomId, updatedMessage }));
-      },
-    );
-
-    socket.on(
-      ChatEvents.deleteMessage,
-      (roomId: Room["roomId"], messageId: Message["messageId"]) => {
-        dispatch(deleteMessage({ roomId, messageId }));
-      },
-    );
-
     return () => {
       socket.off(ChatEvents.userOnline);
       socket.off(ChatEvents.userOffline);
@@ -90,49 +65,6 @@ function Chat() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!selectedRoom || !selectedRoomId) {
-      return;
-    }
-    const unreadMessagesIds = getUnreadMessagesIds(
-      selectedRoom.messages,
-      userId,
-    );
-    if (unreadMessagesIds.length > 0) {
-      socket.emit(ChatEvents.readMessages, {
-        messagesIds: unreadMessagesIds,
-        userId,
-      });
-      dispatch(
-        markMessagesAsRead({
-          messagesIds: unreadMessagesIds,
-          roomId: selectedRoomId,
-          userId,
-        }),
-      );
-    }
-  }, [selectedRoomId]);
-
-  useEffect(() => {
-    socket.on(
-      ChatEvents.newMessage,
-      (roomId: Room["roomId"], message: Message) => {
-        dispatch(
-          newMessage({ roomId, message, unread: selectedRoomId !== roomId }),
-        );
-        if (roomId === selectedRoomId) {
-          socket.emit(ChatEvents.readMessages, {
-            messagesIds: [message.messageId],
-            userId,
-          });
-        }
-      },
-    );
-    return () => {
-      socket.off(ChatEvents.newMessage);
-    };
-  }, [selectedRoomId]);
-
   const handleSelectParticipant = (participant: Participant) => {
     const existingRoom = rooms.find(
       ({ participants }) => participants[0].userId === participant.userId,
@@ -140,6 +72,7 @@ function Chat() {
     if (existingRoom) {
       setNewRoom(null);
       setSelectedRoomId(existingRoom.roomId);
+      setRoomType(RoomTypes.connected);
     } else {
       socket.emit(
         ChatEvents.findRoom,
@@ -157,6 +90,9 @@ function Chat() {
                 };
           setNewRoom(room);
           setSelectedRoomId(null);
+          setRoomType(
+            foundRoom !== "none" ? RoomTypes.disconnected : RoomTypes.new,
+          );
         },
       );
     }
@@ -202,63 +138,6 @@ function Chat() {
     );
   };
 
-  const handleLoadMoreMessages = (roomId: Room["roomId"], skip: number) => {
-    socket.emit(
-      ChatEvents.loadMoreMessages,
-      { roomId, skip },
-      (messages: Message[]) => {
-        dispatch(saveExtraMessages({ roomId, messages }));
-        const unreadMessagesIds = getUnreadMessagesIds(messages, userId);
-        if (unreadMessagesIds.length > 0) {
-          socket.emit(ChatEvents.readMessages, {
-            messagesIds: unreadMessagesIds,
-            userId,
-          });
-          dispatch(
-            markMessagesAsRead({
-              messagesIds: unreadMessagesIds,
-              userId,
-              roomId,
-            }),
-          );
-        }
-      },
-    );
-  };
-
-  const handleSendMessage = (roomId: Room["roomId"], text: string) => {
-    socket.emit(
-      ChatEvents.newMessage,
-      { roomId, text, author: userId },
-      (message: Message) => {
-        dispatch(newMessage({ roomId, message, unread: false }));
-      },
-    );
-  };
-
-  const handleUpdateMessage = (
-    messageId: Message["messageId"],
-    newText: Message["text"],
-  ) => {
-    socket.emit(
-      ChatEvents.updateMessage,
-      { messageId, roomId: selectedRoomId, newText },
-      (updatedMessage: Message) => {
-        dispatch(updateMessage({ roomId: selectedRoomId!, updatedMessage }));
-      },
-    );
-  };
-
-  const handleDeleteMessage = (messageId: Message["messageId"]) => {
-    socket.emit(
-      ChatEvents.deleteMessage,
-      { roomId: selectedRoom?.roomId, messageId },
-      () => {
-        dispatch(deleteMessage({ roomId: selectedRoomId!, messageId }));
-      },
-    );
-  };
-
   return (
     <Container>
       <>
@@ -277,13 +156,9 @@ function Chat() {
           <Logout />
         </Aside>
         <Messages
-          newRoom={newRoom}
-          selectedRoom={selectedRoom}
-          onCreateRoom={handleCreateRoom}
-          onLoadMoreMessages={handleLoadMoreMessages}
-          onSendMessage={handleSendMessage}
-          onUpdateMessage={handleUpdateMessage}
-          onDeleteMessage={handleDeleteMessage}
+          room={newRoom ?? selectedRoom}
+          roomType={roomType}
+          onJoinRoom={handleCreateRoom}
         />
       </>
     </Container>

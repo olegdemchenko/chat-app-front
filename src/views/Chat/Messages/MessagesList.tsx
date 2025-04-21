@@ -5,21 +5,26 @@ import UserOwnMessage from "./UserOwnMessage";
 import ParticipantMessage from "./ParticipantMessage";
 import SystemMessage from "./SystemMessage";
 import ScrollableList from "components/ScrollableList";
+import { RoomTypes } from "app/constants";
 
 type MessagesListProps = {
   room: Room;
-  isNewRoom: boolean;
+  roomType: RoomTypes | null;
   onLoadMoreMessages: (roomId: Room["roomId"], page: number) => void;
   onUpdateMessage: (
+    roomId: Room["roomId"],
     messageId: Message["messageId"],
     newText: Message["text"],
   ) => void;
-  onDeleteMessage: (messageId: Message["messageId"]) => void;
+  onDeleteMessage: (
+    roomId: Room["roomId"],
+    messageId: Message["messageId"],
+  ) => void;
 };
 
 function MessagesList({
   room,
-  isNewRoom,
+  roomType,
   onLoadMoreMessages,
   onUpdateMessage,
   onDeleteMessage,
@@ -59,12 +64,14 @@ function MessagesList({
             <UserOwnMessage
               key={message.messageId}
               message={message}
-              onUpdateMessage={onUpdateMessage}
-              onDeleteMessage={onDeleteMessage}
+              onUpdateMessage={onUpdateMessage.bind(null, room.roomId)}
+              onDeleteMessage={onDeleteMessage.bind(null, room.roomId)}
             />
           );
         })}
-        isListExausted={isNewRoom || messagesCount === messages.length}
+        isListExausted={
+          roomType === RoomTypes.new || messagesCount === messages.length
+        }
         onReachEnd={handleLoadMoreMessages}
       />
     </Box>

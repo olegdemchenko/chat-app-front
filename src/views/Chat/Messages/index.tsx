@@ -1,51 +1,121 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Grid } from "@mui/material";
+import { Socket } from "socket.io-client";
+import { useDispatch } from "react-redux";
 import { Room, Message } from "types";
 import StartChatting from "./StartChatting";
 import Input from "./Input";
 import Header from "./Header";
 import MessagesList from "./MessagesList";
 import JoinChatBanner from "./JoinChatBanner";
+import SocketContext from "contexts/SocketContext";
+import ProfileContext from "contexts/ProfileContext";
+import { ChatEvents } from "app/constants";
+import { Profile } from "types";
+import {
+  saveExtraMessages,
+  newMessage,
+  updateMessage,
+  deleteMessage,
+} from "store/roomsSlice";
+import { RoomTypes } from "app/constants";
 
 type MessagesProps = {
-  newRoom: Room | null;
-  selectedRoom: Room | null;
-  onCreateRoom: (callback: (createdRoom: Room["roomId"]) => void) => void;
-  onLoadMoreMessages: (roomId: Room["roomId"], page: number) => void;
-  onSendMessage: (roomId: Room["roomId"], text: string) => void;
-  onUpdateMessage: (
-    messageId: Message["messageId"],
-    newText: Message["text"],
-  ) => void;
-  onDeleteMessage: (messageId: Message["messageId"]) => void;
+  room: Room | null;
+  roomType: RoomTypes | null;
+  onJoinRoom: (callback: (joinedRoomId: Room["roomId"]) => void) => void;
 };
 
-function Messages({
-  newRoom,
-  selectedRoom,
-  onCreateRoom,
-  onLoadMoreMessages,
-  onSendMessage,
-  onUpdateMessage,
-  onDeleteMessage,
-}: MessagesProps) {
-  if (!newRoom && !selectedRoom) {
-    return null;
-  }
+function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
+  const dispatch = useDispatch();
+  const socket = useContext(SocketContext) as Socket;
+  const { userId } = useContext(ProfileContext) as Profile;
 
-  const room = (newRoom ?? selectedRoom) as Room;
+  useEffect(() => {
+    socket.on(
+      ChatEvents.newMessage,
+      (roomId: Room["roomId"], message: Message) => {
+        dispatch(newMessage({ roomId, message }));
+      },
+    );
+    socket.on(
+      ChatEvents.updateMessage,
+      (roomId: Room["roomId"], updatedMessage: Message) => {
+        dispatch(updateMessage({ roomId, updatedMessage }));
+      },
+    );
 
-  const handleSendFirstMessage = (message: string) => {
-    onCreateRoom((roomId) => {
-      onSendMessage(roomId, message);
+    socket.on(
+      ChatEvents.deleteMessage,
+      (roomId: Room["roomId"], messageId: Message["messageId"]) => {
+        dispatch(deleteMessage({ roomId, messageId }));
+      },
+    );
+
+    return () => {
+      socket.off(ChatEvents.updateMessage);
+      socket.off(ChatEvents.deleteMessage);
+      socket.off(ChatEvents.newMessage);
+    };
+  }, []);
+
+  const handleLoadMoreMessages = (roomId: Room["roomId"], skip: number) => {
+    socket.emit(
+      ChatEvents.loadMoreMessages,
+      { roomId, skip },
+      (messages: Message[]) => {
+        dispatch(saveExtraMessages({ roomId, messages }));
+      },
+    );
+  };
+
+  const handleSendMessage = (roomId: Room["roomId"], text: string) => {
+    socket.emit(
+      ChatEvents.newMessage,
+      { roomId, text, author: userId },
+      (message: Message) => {
+        dispatch(newMessage({ roomId, message }));
+      },
+    );
+  };
+
+  const handleUpdateMessage = (
+    roomId: Room["roomId"],
+    messageId: Message["messageId"],
+    newText: Message["text"],
+  ) => {
+    socket.emit(
+      ChatEvents.updateMessage,
+      { messageId, roomId, newText },
+      (updatedMessage: Message) => {
+        dispatch(updateMessage({ roomId, updatedMessage }));
+      },
+    );
+  };
+
+  const handleDeleteMessage = (
+    roomId: Room["roomId"],
+    messageId: Message["messageId"],
+  ) => {
+    socket.emit(ChatEvents.deleteMessage, { roomId, messageId }, () => {
+      dispatch(deleteMessage({ roomId, messageId }));
     });
   };
 
-  const handleSendMessage = (message: string) => {
-    onSendMessage(room.roomId, message);
+  const handleJoinRoom = (message: string) => {
+    onJoinRoom((roomId) => {
+      handleSendMessage(roomId, message);
+    });
   };
 
-  const handleSend = newRoom ? handleSendFirstMessage : handleSendMessage;
+  const handleSubmit =
+    roomType === RoomTypes.connected
+      ? (message: string) => handleSendMessage(room!.roomId, message)
+      : handleJoinRoom;
+
+  if (!room) {
+    return null;
+  }
 
   return (
     <Grid
@@ -58,22 +128,20 @@ function Messages({
       }}
     >
       <Header participants={room.participants} />
-      {room.messages.length === 0 ? (
+      {roomType === RoomTypes.new ? (
         <StartChatting />
       ) : (
         <MessagesList
           key={room.roomId}
           room={room}
-          isNewRoom={Boolean(newRoom)}
-          onLoadMoreMessages={onLoadMoreMessages}
-          onUpdateMessage={onUpdateMessage}
-          onDeleteMessage={onDeleteMessage}
+          roomType={roomType}
+          onLoadMoreMessages={handleLoadMoreMessages}
+          onUpdateMessage={handleUpdateMessage}
+          onDeleteMessage={handleDeleteMessage}
         />
       )}
-      {Boolean(newRoom) && Number(newRoom?.messages?.length) > 0 && (
-        <JoinChatBanner />
-      )}
-      <Input onSubmit={handleSend} />
+      {roomType === RoomTypes.disconnected && <JoinChatBanner />}
+      <Input onSubmit={handleSubmit} />
     </Grid>
   );
 }

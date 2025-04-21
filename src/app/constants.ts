@@ -6,6 +6,12 @@ export const routes = {
   chat: "chat",
 };
 
+export enum RoomTypes {
+  new = "new",
+  disconnected = "disconnected",
+  connected = "connected",
+}
+
 export enum ChatEvents {
   connect = "connect",
   joinRooms = "joinRooms",
