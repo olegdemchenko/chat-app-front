@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Socket } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@mui/material";
@@ -14,14 +14,7 @@ import Logout from "./Logout";
 import { Profile } from "types";
 import { RoomTypes } from "app/constants";
 
-import {
-  selectAllRooms,
-  addRoom,
-  deleteRoom,
-  addRooms,
-  userJoined,
-  userLeft,
-} from "store/roomsSlice";
+import { selectAllRooms, addRoom, deleteRoom } from "store/roomsSlice";
 import ProfileContext from "contexts/ProfileContext";
 import SocketContext from "contexts/SocketContext";
 
@@ -38,32 +31,6 @@ function Chat() {
 
   const selectedRoom =
     rooms.find(({ roomId }) => roomId === selectedRoomId) ?? null;
-
-  useEffect(() => {
-    socket.emit(ChatEvents.getUserRooms, userId, (rooms: Room[]) => {
-      dispatch(addRooms(rooms));
-    });
-  }, []);
-
-  useEffect(() => {
-    socket.on(ChatEvents.userOnline, (userId: Participant["userId"]) => {
-      dispatch(userJoined(userId));
-    });
-    socket.on(ChatEvents.userOffline, (userId: Participant["userId"]) => {
-      dispatch(userLeft(userId));
-    });
-    socket.on(ChatEvents.newRoom, (newRoom: Room) => {
-      dispatch(addRoom(newRoom));
-    });
-
-    return () => {
-      socket.off(ChatEvents.userOnline);
-      socket.off(ChatEvents.userOffline);
-      socket.off(ChatEvents.newRoom);
-      socket.off(ChatEvents.updateMessage);
-      socket.off(ChatEvents.deleteMessage);
-    };
-  }, []);
 
   const handleSelectParticipant = (participant: Participant) => {
     const existingRoom = rooms.find(
@@ -108,9 +75,11 @@ function Chat() {
       dispatch(addRoom(newRoom));
       setNewRoom(null);
       setSelectedRoomId(newRoom.roomId);
+      setRoomType(RoomTypes.connected);
       callback(newRoom.roomId);
     };
-    newRoom!.messages.length > 0
+
+    roomType === RoomTypes.disconnected
       ? socket.emit(
           ChatEvents.connectToRoom,
           { roomId: newRoom?.roomId, userId, userName: name },
