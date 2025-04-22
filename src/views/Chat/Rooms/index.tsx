@@ -39,7 +39,7 @@ function Rooms({
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    socket.emit(ChatEvents.getUserRooms, userId, (rooms: Room[]) => {
+    socket.emit(ChatEvents.getUserRooms, { userId }, (rooms: Room[]) => {
       dispatch(addRooms(rooms));
     });
     socket.on(ChatEvents.userOnline, (userId: Participant["userId"]) => {
