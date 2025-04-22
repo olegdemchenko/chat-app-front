@@ -70,15 +70,11 @@ const roomsSlice = createSlice({
       action: PayloadAction<{
         roomId: Room["roomId"];
         message: Message;
-        unread: boolean;
       }>,
     ) => {
-      const { roomId, message, unread } = action.payload;
+      const { roomId, message } = action.payload;
       state.entities[roomId].messages.push(message);
       state.entities[roomId].messagesCount += 1;
-      if (unread) {
-        state.entities[roomId].unreadMessagesCount += 1;
-      }
     },
     updateMessage: (
       state,
@@ -125,5 +121,5 @@ export const {
   deleteMessage,
 } = roomsSlice.actions;
 
-export const { selectAll: selectAllRooms } =
+export const { selectAll: selectAllRooms, selectById: selectRoom } =
   roomsAdapter.getSelectors<RootState>((state) => state.rooms);

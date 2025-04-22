@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box } from "@mui/material";
-import { Message, Room } from "types";
+import { useDispatch } from "react-redux";
+import { Message, Profile, Room } from "types";
 import UserOwnMessage from "./UserOwnMessage";
 import ParticipantMessage from "./ParticipantMessage";
 import SystemMessage from "./SystemMessage";
 import ScrollableList from "components/ScrollableList";
 import { RoomTypes } from "app/constants";
+import { markMessagesAsRead } from "store/roomsSlice";
+import { ChatEvents } from "app/constants";
+import SocketContext from "contexts/SocketContext";
+import ProfileContext from "contexts/ProfileContext";
+import { Socket } from "socket.io-client";
+import InViewObserver from "components/InViewObserver";
 
 type MessagesListProps = {
   room: Room;
@@ -29,10 +36,30 @@ function MessagesList({
   onUpdateMessage,
   onDeleteMessage,
 }: MessagesListProps) {
-  const { messages, participants, messagesCount } = room;
+  const socket = useContext(SocketContext) as Socket;
+  const { userId } = useContext(ProfileContext) as Profile;
+  const dispatch = useDispatch();
+  const { messages, participants, messagesCount, roomId } = room;
 
   const handleLoadMoreMessages = () => {
     onLoadMoreMessages(room.roomId, messages.length);
+  };
+
+  const handleReadMessage = (message: Message) => () => {
+    const wasMessageRead = message.readBy.includes(userId);
+    if (!wasMessageRead) {
+      socket.emit(ChatEvents.readMessages, {
+        messagesIds: [message.messageId],
+        userId,
+      });
+      dispatch(
+        markMessagesAsRead({
+          messagesIds: [message.messageId],
+          roomId,
+          userId,
+        }),
+      );
+    }
   };
 
   return (
@@ -49,17 +76,23 @@ function MessagesList({
         direction="top"
         elements={messages.map((message) => {
           if (message.author === "system") {
-            return <SystemMessage message={message} key={message.messageId} />;
+            return (
+              <InViewObserver onInView={handleReadMessage(message)}>
+                <SystemMessage message={message} key={message.messageId} />
+              </InViewObserver>
+            );
           }
-          const author = participants.find(
+          const isUserAuthor = participants.find(
             ({ userId }) => message.author === userId,
           );
-          return author ? (
-            <ParticipantMessage
-              message={message}
-              author={author}
-              key={message.messageId}
-            />
+          return isUserAuthor ? (
+            <InViewObserver onInView={handleReadMessage(message)}>
+              <ParticipantMessage
+                message={message}
+                author={isUserAuthor}
+                key={message.messageId}
+              />
+            </InViewObserver>
           ) : (
             <UserOwnMessage
               key={message.messageId}
