@@ -68,6 +68,7 @@ function Chat() {
   const handleSelectRoom = (roomId: Room["roomId"]) => {
     setSelectedRoomId(roomId);
     setNewRoom(null);
+    setRoomType(RoomTypes.connected);
   };
 
   const handleCreateRoom = (callback: (roomId: Room["roomId"]) => void) => {
