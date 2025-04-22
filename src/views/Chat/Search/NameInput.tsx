@@ -72,7 +72,6 @@ function NameInput({ query, onEnter, onDrop }: NameInputProps) {
         value={query}
         onChange={handleTextChange}
         sx={searchInputStyles}
-        onBlur={onDrop}
       />
     </Box>
   );
