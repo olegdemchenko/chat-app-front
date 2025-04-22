@@ -63,7 +63,12 @@ const roomsSlice = createSlice({
             ? message
             : { ...message, readBy: [...message.readBy, userId] },
       );
-      state.entities[roomId].unreadMessagesCount -= messagesIds.length;
+      if (
+        state.entities[roomId].unreadMessagesCount - messagesIds.length >=
+        0
+      ) {
+        state.entities[roomId].unreadMessagesCount -= messagesIds.length;
+      }
     },
     newMessage: (
       state,
