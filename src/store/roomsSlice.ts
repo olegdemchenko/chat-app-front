@@ -80,6 +80,18 @@ const roomsSlice = createSlice({
       const { roomId, message } = action.payload;
       state.entities[roomId].messages.push(message);
       state.entities[roomId].messagesCount += 1;
+      state.entities[roomId].unreadMessagesCount += 1;
+    },
+    messageSent: (
+      state,
+      action: PayloadAction<{
+        roomId: Room["roomId"];
+        message: Message;
+      }>,
+    ) => {
+      const { roomId, message } = action.payload;
+      state.entities[roomId].messages.push(message);
+      state.entities[roomId].messagesCount += 1;
     },
     updateMessage: (
       state,
@@ -122,6 +134,7 @@ export const {
   saveExtraMessages,
   markMessagesAsRead,
   newMessage,
+  messageSent,
   updateMessage,
   deleteMessage,
 } = roomsSlice.actions;

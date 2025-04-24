@@ -15,6 +15,7 @@ import { Profile } from "types";
 import {
   saveExtraMessages,
   newMessage,
+  messageSent,
   updateMessage,
   deleteMessage,
 } from "store/roomsSlice";
@@ -74,7 +75,7 @@ function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
       ChatEvents.newMessage,
       { roomId, text, author: userId },
       (message: Message) => {
-        dispatch(newMessage({ roomId, message }));
+        dispatch(messageSent({ roomId, message }));
       },
     );
   };
