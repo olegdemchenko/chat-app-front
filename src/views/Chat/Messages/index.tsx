@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Grid } from "@mui/material";
 import { Socket } from "socket.io-client";
 import { useDispatch } from "react-redux";
@@ -31,6 +31,7 @@ function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext) as Socket;
   const { userId } = useContext(ProfileContext) as Profile;
+  const [sending, setSending] = useState<boolean>(false);
 
   useEffect(() => {
     socket.on(
@@ -71,10 +72,12 @@ function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
   };
 
   const handleSendMessage = (roomId: Room["roomId"], text: string) => {
+    setSending(true);
     socket.emit(
       ChatEvents.newMessage,
       { roomId, text, author: userId },
       (message: Message) => {
+        setSending(false);
         dispatch(messageSent({ roomId, message }));
       },
     );
@@ -104,6 +107,7 @@ function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
   };
 
   const handleJoinRoom = (message: string) => {
+    setSending(true);
     onJoinRoom((roomId) => {
       handleSendMessage(roomId, message);
     });
@@ -142,7 +146,7 @@ function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
         />
       )}
       {roomType === RoomTypes.disconnected && <JoinChatBanner />}
-      <Input onSubmit={handleSubmit} />
+      <Input onSubmit={handleSubmit} disabled={sending} />
     </Grid>
   );
 }
