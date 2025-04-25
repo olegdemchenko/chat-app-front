@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { InView } from "react-intersection-observer";
 
 type InViewObserverProps = {
@@ -7,18 +7,14 @@ type InViewObserverProps = {
 };
 
 function InViewObserver({ children, onInView }: InViewObserverProps) {
-  const [inView, setInView] = useState<boolean>(false);
-
-  const handleChange = (inView: boolean) => setInView(inView);
-
-  useEffect(() => {
+  const handleInView = (inView: boolean) => {
     if (inView) {
       onInView();
     }
-  }, [inView]);
+  };
 
   return (
-    <InView onChange={handleChange} triggerOnce>
+    <InView onChange={handleInView} triggerOnce>
       {children}
     </InView>
   );
