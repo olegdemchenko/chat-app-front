@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import LinearProgress from "@mui/material/LinearProgress";
 import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { Message, Participant, Profile, Room } from "types";
 import UserOwnMessage from "./UserOwnMessage";
 import ParticipantMessage from "./ParticipantMessage";
 import SystemMessage from "./SystemMessage";
-import ScrollableList from "components/ScrollableList";
 import { RoomTypes } from "app/constants";
 import { markMessagesAsRead } from "store/roomsSlice";
 import { ChatEvents } from "app/constants";
@@ -45,6 +46,9 @@ function MessagesList({
     onLoadMoreMessages(room.roomId, messages.length);
   };
 
+  const noMessagesLeft =
+    roomType === RoomTypes.new || messagesCount === messages.length;
+
   const handleReadMessage = (message: Message) => () => {
     const wasMessageRead = message.readBy.includes(userId);
     if (!wasMessageRead) {
@@ -64,17 +68,24 @@ function MessagesList({
 
   return (
     <Box
+      component="div"
       display="flex"
-      flexDirection="column"
-      minHeight={0}
-      rowGap={2}
+      flexDirection="column-reverse"
       paddingX={6}
-      paddingY={4}
+      paddingBottom={4}
+      marginTop={4}
       overflow="auto"
+      id="scrollableDiv"
     >
-      <ScrollableList
-        direction="top"
-        elements={messages.map((message) => {
+      <InfiniteScroll
+        dataLength={messagesCount}
+        hasMore={!noMessagesLeft}
+        loader={<LinearProgress />}
+        next={handleLoadMoreMessages}
+        scrollableTarget="scrollableDiv"
+        inverse={true}
+      >
+        {messages.map((message) => {
           if (message.author === "system") {
             return (
               <InViewObserver
@@ -105,11 +116,7 @@ function MessagesList({
             </InViewObserver>
           );
         })}
-        isListExausted={
-          roomType === RoomTypes.new || messagesCount === messages.length
-        }
-        onReachEnd={handleLoadMoreMessages}
-      />
+      </InfiniteScroll>
     </Box>
   );
 }
