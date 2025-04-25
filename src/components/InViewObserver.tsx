@@ -17,7 +17,11 @@ function InViewObserver({ children, onInView }: InViewObserverProps) {
     }
   }, [inView]);
 
-  return <InView onChange={handleChange}>{children}</InView>;
+  return (
+    <InView onChange={handleChange} triggerOnce>
+      {children}
+    </InView>
+  );
 }
 
 export default InViewObserver;

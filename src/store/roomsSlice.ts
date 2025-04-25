@@ -57,12 +57,11 @@ const roomsSlice = createSlice({
       }>,
     ) => {
       const { roomId, userId, messagesIds } = action.payload;
-      state.entities[roomId].messages = state.entities[roomId].messages.map(
-        (message) =>
-          messagesIds.includes(userId)
-            ? message
-            : { ...message, readBy: [...message.readBy, userId] },
-      );
+      state.entities[roomId].messages.forEach(({ messageId, readBy }) => {
+        if (messagesIds.includes(messageId)) {
+          readBy.push(userId);
+        }
+      });
       if (
         state.entities[roomId].unreadMessagesCount - messagesIds.length >=
         0

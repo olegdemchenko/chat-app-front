@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { Message, Profile, Room } from "types";
+import { Message, Participant, Profile, Room } from "types";
 import UserOwnMessage from "./UserOwnMessage";
 import ParticipantMessage from "./ParticipantMessage";
 import SystemMessage from "./SystemMessage";
@@ -77,29 +77,32 @@ function MessagesList({
         elements={messages.map((message) => {
           if (message.author === "system") {
             return (
-              <InViewObserver onInView={handleReadMessage(message)}>
+              <InViewObserver
+                onInView={handleReadMessage(message)}
+                key={message.messageId}
+              >
                 <SystemMessage message={message} key={message.messageId} />
               </InViewObserver>
             );
           }
-          const isUserAuthor = participants.find(
+          const isUserAuthor = userId === message.author;
+          const messageAuthor = participants.find(
             ({ userId }) => message.author === userId,
-          );
+          ) as Participant;
           return isUserAuthor ? (
-            <InViewObserver onInView={handleReadMessage(message)}>
-              <ParticipantMessage
-                message={message}
-                author={isUserAuthor}
-                key={message.messageId}
-              />
-            </InViewObserver>
-          ) : (
             <UserOwnMessage
               key={message.messageId}
               message={message}
               onUpdateMessage={onUpdateMessage.bind(null, room.roomId)}
               onDeleteMessage={onDeleteMessage.bind(null, room.roomId)}
             />
+          ) : (
+            <InViewObserver
+              onInView={handleReadMessage(message)}
+              key={message.messageId}
+            >
+              <ParticipantMessage message={message} author={messageAuthor} />
+            </InViewObserver>
           );
         })}
         isListExausted={
