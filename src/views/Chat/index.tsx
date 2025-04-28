@@ -29,7 +29,7 @@ function Chat() {
   const socket = useContext(SocketContext) as Socket;
   const dispatch = useDispatch();
   const rooms = useSelector(selectAllRooms);
-  const { userId, name } = useContext(ProfileContext) as Profile;
+  const { userId, username } = useContext(ProfileContext) as Profile;
   const [selectedRoomId, setSelectedRoomId] = useState<Room["roomId"] | null>(
     null,
   );
@@ -121,7 +121,7 @@ function Chat() {
     roomType === RoomTypes.disconnected
       ? socket.emit(
           ChatEvents.connectToRoom,
-          { roomId: newRoom?.roomId, userId, userName: name },
+          { roomId: newRoom?.roomId, userId, username },
           () => {
             updateRoomsState(newRoom as Room);
           },
@@ -138,7 +138,7 @@ function Chat() {
   const handleDeleteRoom = (deletedRoomId: Room["roomId"]) => {
     socket.emit(
       ChatEvents.deleteRoom,
-      { roomId: deletedRoomId, userId, userName: name },
+      { roomId: deletedRoomId, userId, username },
       () => {
         dispatch(deleteRoom(deletedRoomId));
         setSelectedRoomId(null);
