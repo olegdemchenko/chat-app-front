@@ -15,7 +15,6 @@ function Input({ disabled, onSubmit }: InputProps) {
 
   useEffect(() => {
     if (inputRef.current && !disabled) {
-      console.log("focus");
       inputRef.current.focus();
     }
   }, [disabled]);
