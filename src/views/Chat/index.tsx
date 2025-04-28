@@ -33,13 +33,19 @@ function Chat() {
   const [selectedRoomId, setSelectedRoomId] = useState<Room["roomId"] | null>(
     null,
   );
+  const [areRoomsLoading, setAreRoomsLoading] = useState<boolean>(false);
   const [newRoom, setNewRoom] = useState<Room | null>(null);
   const [roomType, setRoomType] = useState<RoomTypes | null>(null);
 
   useEffect(() => {
+    setAreRoomsLoading(true);
     socket.emit(ChatEvents.getUserRooms, { userId }, (rooms: Room[]) => {
       dispatch(addRooms(rooms));
+      setAreRoomsLoading(false);
     });
+  }, []);
+
+  useEffect(() => {
     socket.on(ChatEvents.userOnline, (userId: Participant["userId"]) => {
       dispatch(userJoined(userId));
     });
@@ -69,6 +75,7 @@ function Chat() {
       setSelectedRoomId(existingRoom.roomId);
       setRoomType(RoomTypes.connected);
     } else {
+      setAreRoomsLoading(true);
       socket.emit(
         ChatEvents.findRoom,
         { participantsIds: [participant.userId, userId], userId },
@@ -88,6 +95,7 @@ function Chat() {
           setRoomType(
             foundRoom !== "none" ? RoomTypes.disconnected : RoomTypes.new,
           );
+          setAreRoomsLoading(false);
         },
       );
     }
@@ -106,8 +114,10 @@ function Chat() {
       setSelectedRoomId(newRoom.roomId);
       setRoomType(RoomTypes.connected);
       callback(newRoom.roomId);
+      setAreRoomsLoading(false);
     };
 
+    setAreRoomsLoading(true);
     roomType === RoomTypes.disconnected
       ? socket.emit(
           ChatEvents.connectToRoom,
@@ -147,6 +157,7 @@ function Chat() {
               rooms={rooms}
               newRoom={newRoom}
               selectedRoom={selectedRoom}
+              isLoading={areRoomsLoading}
               onSelect={handleSelectRoom}
               onDelete={handleDeleteRoom}
             />
