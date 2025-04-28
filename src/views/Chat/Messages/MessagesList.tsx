@@ -51,7 +51,7 @@ function MessagesList({
 
   const handleReadMessage = (message: Message) => () => {
     const wasMessageRead = message.readBy.includes(userId);
-    if (!wasMessageRead) {
+    if (!wasMessageRead && roomType === RoomTypes.connected) {
       socket.emit(ChatEvents.readMessages, {
         messagesIds: [message.messageId],
         userId,
