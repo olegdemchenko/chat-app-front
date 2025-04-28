@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Socket } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@mui/material";
@@ -14,7 +14,14 @@ import Logout from "./Logout";
 import { Profile } from "types";
 import { RoomTypes } from "app/constants";
 
-import { selectAllRooms, addRoom, deleteRoom } from "store/roomsSlice";
+import {
+  selectAllRooms,
+  addRoom,
+  deleteRoom,
+  addRooms,
+  userJoined,
+  userLeft,
+} from "store/roomsSlice";
 import ProfileContext from "contexts/ProfileContext";
 import SocketContext from "contexts/SocketContext";
 
@@ -28,6 +35,27 @@ function Chat() {
   );
   const [newRoom, setNewRoom] = useState<Room | null>(null);
   const [roomType, setRoomType] = useState<RoomTypes | null>(null);
+
+  useEffect(() => {
+    socket.emit(ChatEvents.getUserRooms, { userId }, (rooms: Room[]) => {
+      dispatch(addRooms(rooms));
+    });
+    socket.on(ChatEvents.userOnline, (userId: Participant["userId"]) => {
+      dispatch(userJoined(userId));
+    });
+    socket.on(ChatEvents.userOffline, (userId: Participant["userId"]) => {
+      dispatch(userLeft(userId));
+    });
+    socket.on(ChatEvents.newRoom, (newRoom: Room) => {
+      dispatch(addRoom(newRoom));
+    });
+
+    return () => {
+      socket.off(ChatEvents.userOnline);
+      socket.off(ChatEvents.userOffline);
+      socket.off(ChatEvents.newRoom);
+    };
+  }, []);
 
   const selectedRoom =
     rooms.find(({ roomId }) => roomId === selectedRoomId) ?? null;

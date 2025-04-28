@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
@@ -7,14 +7,6 @@ import { useTranslation } from "react-i18next";
 import { Room } from "types";
 import DeleteRoomDialog from "./DeleteRoomDialog";
 import RoomItem from "./Room";
-import { ChatEvents } from "app/constants";
-import SocketContext from "contexts/SocketContext";
-import { Socket } from "socket.io-client";
-import { useDispatch } from "react-redux";
-import { Profile } from "types";
-import { addRoom, addRooms, userJoined, userLeft } from "store/roomsSlice";
-import ProfileContext from "contexts/ProfileContext";
-import { Participant } from "types";
 
 type RoomsProps = {
   rooms: Room[];
@@ -31,34 +23,9 @@ function Rooms({
   onSelect,
   onDelete,
 }: RoomsProps) {
-  const socket = useContext(SocketContext) as Socket;
-  const { userId } = useContext(ProfileContext) as Profile;
-  const dispatch = useDispatch();
   const { t } = useTranslation();
   const [deleteRoom, setDeleteRoom] = useState<Room | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    socket.emit(ChatEvents.getUserRooms, { userId }, (rooms: Room[]) => {
-      dispatch(addRooms(rooms));
-    });
-    socket.on(ChatEvents.userOnline, (userId: Participant["userId"]) => {
-      dispatch(userJoined(userId));
-    });
-    socket.on(ChatEvents.userOffline, (userId: Participant["userId"]) => {
-      dispatch(userLeft(userId));
-    });
-    socket.on(ChatEvents.newRoom, (newRoom: Room) => {
-      dispatch(addRoom(newRoom));
-    });
-
-    return () => {
-      socket.off(ChatEvents.getUserRooms);
-      socket.off(ChatEvents.userOnline);
-      socket.off(ChatEvents.userOffline);
-      socket.off(ChatEvents.newRoom);
-    };
-  }, []);
 
   const handleToggleModal = () => setIsModalOpen(!isModalOpen);
 
