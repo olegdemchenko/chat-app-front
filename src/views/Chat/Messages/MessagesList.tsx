@@ -90,7 +90,7 @@ function MessagesList({
             return (
               <InViewObserver
                 onInView={handleReadMessage(message)}
-                key={message.messageId}
+                key={`${message.messageId}${roomType}`}
               >
                 <SystemMessage message={message} key={message.messageId} />
               </InViewObserver>
@@ -110,7 +110,7 @@ function MessagesList({
           ) : (
             <InViewObserver
               onInView={handleReadMessage(message)}
-              key={message.messageId}
+              key={`${message.messageId}${roomType}`}
             >
               <ParticipantMessage message={message} author={messageAuthor} />
             </InViewObserver>

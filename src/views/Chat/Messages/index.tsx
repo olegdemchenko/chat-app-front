@@ -137,7 +137,6 @@ function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
         <StartChatting />
       ) : (
         <MessagesList
-          key={room.roomId}
           room={room}
           roomType={roomType}
           onLoadMoreMessages={handleLoadMoreMessages}
