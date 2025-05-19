@@ -82,7 +82,7 @@ function Chat() {
         (foundRoom: Room | "none") => {
           const room =
             foundRoom !== "none"
-              ? { ...foundRoom, messages: foundRoom.messages.reverse() }
+              ? foundRoom
               : {
                   roomId: "newRoomId",
                   participants: [participant],

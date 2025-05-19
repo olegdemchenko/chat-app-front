@@ -1,7 +1,5 @@
-import React, { useContext } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import LinearProgress from "@mui/material/LinearProgress";
-import { Box } from "@mui/material";
+import React, { useContext, useState, useLayoutEffect, useRef } from "react";
+import { Box, LinearProgress } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { Message, Participant, Profile, Room } from "types";
 import UserOwnMessage from "./UserOwnMessage";
@@ -14,11 +12,16 @@ import SocketContext from "contexts/SocketContext";
 import ProfileContext from "contexts/ProfileContext";
 import { Socket } from "socket.io-client";
 import InViewObserver from "components/InViewObserver";
+import { InView } from "react-intersection-observer";
 
 type MessagesListProps = {
   room: Room;
   roomType: RoomTypes | null;
-  onLoadMoreMessages: (roomId: Room["roomId"], page: number) => void;
+  onLoadMoreMessages: (
+    roomId: Room["roomId"],
+    page: number,
+    onLoadEnd: () => void,
+  ) => void;
   onUpdateMessage: (
     roomId: Room["roomId"],
     messageId: Message["messageId"],
@@ -39,11 +42,22 @@ function MessagesList({
 }: MessagesListProps) {
   const socket = useContext(SocketContext) as Socket;
   const { userId } = useContext(ProfileContext) as Profile;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const { messages, participants, messagesCount, roomId } = room;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastMessageId = messages[0]?.messageId ?? null;
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.scrollTo(0, container.scrollHeight);
+    }
+  }, [lastMessageId]);
 
   const handleLoadMoreMessages = () => {
-    onLoadMoreMessages(room.roomId, messages.length);
+    setIsLoading(true);
+    onLoadMoreMessages(room.roomId, messages.length, () => setIsLoading(false));
   };
 
   const noMessagesLeft =
@@ -74,49 +88,50 @@ function MessagesList({
       paddingX={6}
       paddingBottom={4}
       marginTop={4}
+      paddingTop={1}
       overflow="auto"
-      id="scrollableDiv"
+      ref={containerRef}
     >
-      <InfiniteScroll
-        dataLength={messagesCount}
-        hasMore={!noMessagesLeft}
-        loader={<LinearProgress />}
-        next={handleLoadMoreMessages}
-        scrollableTarget="scrollableDiv"
-        inverse={true}
-      >
-        {messages.map((message) => {
-          if (message.author === "system") {
-            return (
-              <InViewObserver
-                onInView={handleReadMessage(message)}
-                key={`${message.messageId}${roomType}`}
-              >
-                <SystemMessage message={message} key={message.messageId} />
-              </InViewObserver>
-            );
-          }
-          const isUserAuthor = userId === message.author;
-          const messageAuthor = participants.find(
-            ({ userId }) => message.author === userId,
-          ) as Participant;
-          return isUserAuthor ? (
-            <UserOwnMessage
-              key={message.messageId}
-              message={message}
-              onUpdateMessage={onUpdateMessage.bind(null, room.roomId)}
-              onDeleteMessage={onDeleteMessage.bind(null, room.roomId)}
-            />
-          ) : (
+      {messages.map((message) => {
+        if (message.author === "system") {
+          return (
             <InViewObserver
               onInView={handleReadMessage(message)}
               key={`${message.messageId}${roomType}`}
             >
-              <ParticipantMessage message={message} author={messageAuthor} />
+              <SystemMessage message={message} key={message.messageId} />
             </InViewObserver>
           );
-        })}
-      </InfiniteScroll>
+        }
+        const isUserAuthor = userId === message.author;
+        const messageAuthor = participants.find(
+          ({ userId }) => message.author === userId,
+        ) as Participant;
+        return isUserAuthor ? (
+          <UserOwnMessage
+            key={message.messageId}
+            message={message}
+            onUpdateMessage={onUpdateMessage.bind(null, room.roomId)}
+            onDeleteMessage={onDeleteMessage.bind(null, room.roomId)}
+          />
+        ) : (
+          <InViewObserver
+            onInView={handleReadMessage(message)}
+            key={`${message.messageId}${roomType}`}
+          >
+            <ParticipantMessage message={message} author={messageAuthor} />
+          </InViewObserver>
+        );
+      })}
+      {isLoading && <LinearProgress />}
+      <InView
+        onChange={(inView) => {
+          if (inView && !noMessagesLeft) {
+            console.log("in view");
+            handleLoadMoreMessages();
+          }
+        }}
+      />
     </Box>
   );
 }

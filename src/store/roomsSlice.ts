@@ -14,13 +14,7 @@ const roomsSlice = createSlice({
   name: "rooms",
   initialState: roomsAdapter.getInitialState(),
   reducers: {
-    addRooms: (state, action: PayloadAction<Room[]>) => {
-      const modifiedRooms = action.payload.map((room) => ({
-        ...room,
-        messages: room.messages.reverse(),
-      }));
-      roomsAdapter.addMany(state, modifiedRooms);
-    },
+    addRooms: roomsAdapter.addMany,
     addRoom: roomsAdapter.addOne,
     deleteRoom: roomsAdapter.removeOne,
     userJoined: (state, action: PayloadAction<Participant["userId"]>) => {
@@ -46,7 +40,7 @@ const roomsSlice = createSlice({
       action: PayloadAction<{ roomId: Room["roomId"]; messages: Message[] }>,
     ) => {
       const { roomId, messages } = action.payload;
-      state.entities[roomId].messages.unshift(...messages.reverse());
+      state.entities[roomId].messages.push(...messages);
     },
     markMessagesAsRead: (
       state,
@@ -77,7 +71,7 @@ const roomsSlice = createSlice({
       }>,
     ) => {
       const { roomId, message } = action.payload;
-      state.entities[roomId].messages.push(message);
+      state.entities[roomId].messages.unshift(message);
       state.entities[roomId].messagesCount += 1;
       state.entities[roomId].unreadMessagesCount += 1;
     },
@@ -89,7 +83,7 @@ const roomsSlice = createSlice({
       }>,
     ) => {
       const { roomId, message } = action.payload;
-      state.entities[roomId].messages.push(message);
+      state.entities[roomId].messages.unshift(message);
       state.entities[roomId].messagesCount += 1;
     },
     updateMessage: (

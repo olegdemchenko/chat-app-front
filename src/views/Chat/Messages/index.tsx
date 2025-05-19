@@ -61,11 +61,16 @@ function Messages({ room, roomType, onJoinRoom }: MessagesProps) {
     };
   }, []);
 
-  const handleLoadMoreMessages = (roomId: Room["roomId"], skip: number) => {
+  const handleLoadMoreMessages = (
+    roomId: Room["roomId"],
+    skip: number,
+    onLoadEnd: () => void,
+  ) => {
     socket.emit(
       ChatEvents.loadMoreMessages,
       { roomId, skip },
       (messages: Message[]) => {
+        onLoadEnd();
         dispatch(saveExtraMessages({ roomId, messages }));
       },
     );
